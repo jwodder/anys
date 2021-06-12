@@ -40,7 +40,7 @@ class AnyBase(ABC):
             return False
 
 
-class AnyRepr(Generic[T]):
+class AnyRepr(AnyBase, Generic[T]):
     def __init__(self, arg: T) -> None:
         self.arg = arg
 
@@ -48,7 +48,7 @@ class AnyRepr(Generic[T]):
         return f"{type(self).__name__}({self.arg!r})"
 
 
-class AnyFunc(AnyRepr[Callable], AnyBase):
+class AnyFunc(AnyRepr[Callable]):
     def match(self, value: Any) -> bool:
         return bool(self.arg(value))
 
@@ -103,3 +103,12 @@ class AnyAwareDatetime(AnyBase):
 
 
 ANY_AWARE_DATETIME: Any = AnyAwareDatetime()
+
+
+class Maybe(AnyRepr[Any]):
+    def match(self, value: Any) -> bool:
+        return bool(value is None or self.arg == value)
+
+
+def maybe(value: Any) -> Any:
+    return Maybe(value)
