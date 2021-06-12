@@ -11,6 +11,9 @@ __license__ = "MIT"
 __url__ = "https://github.com/jwodder/anys"
 
 from abc import ABC, abstractmethod
+from collections.abc import Iterable, Iterator, Mapping, Sequence
+from datetime import datetime
+from numbers import Number
 import sys
 import types
 from typing import Any, Callable, Generic, Optional, Tuple, TypeVar, Union
@@ -50,6 +53,10 @@ class AnyFunc(AnyRepr[Callable], AnyBase):
         return bool(self.arg(value))
 
 
+def any_func(func: Callable) -> Any:
+    return AnyFunc(func)
+
+
 class AnyInstance(AnyBase):
     def __init__(self, arg: ClassInfo, *, name: Optional[str] = None) -> None:
         self.arg = arg
@@ -65,17 +72,34 @@ class AnyInstance(AnyBase):
         return isinstance(value, self.arg)
 
 
-# Anys need to be constructed via functions that return typing.Any so that
-# comparing them doesn't trigger a "comparison-overlap" type error.
-
-
-def any_func(func: Callable) -> Any:
-    return AnyFunc(func)
-
-
 def any_instance(classinfo: ClassInfo, *, name: Optional[str] = None) -> Any:
     return AnyInstance(classinfo, name=name)
 
 
-ANY_STR = any_instance(str, name="ANY_STR")
+ANY_BOOL = any_instance(bool, name="ANY_BOOL")
+ANY_BYTES = any_instance(bytes, name="ANY_BYTES")
+ANY_COMPLEX = any_instance(complex, name="ANY_COMPLEX")
+ANY_DATETIME = any_instance(datetime, name="ANY_DATETIME")
+ANY_DICT = any_instance(dict, name="ANY_DICT")
+ANY_FLOAT = any_instance(float, name="ANY_FLOAT")
 ANY_INT = any_instance(int, name="ANY_INT")
+ANY_ITERABLE = any_instance(Iterable, name="ANY_ITERABLE")
+ANY_ITERATOR = any_instance(Iterator, name="ANY_ITERATOR")
+ANY_LIST = any_instance(list, name="ANY_LIST")
+ANY_MAPPING = any_instance(Mapping, name="ANY_MAPPING")
+ANY_NUMBER = any_instance(Number, name="ANY_NUMBER")
+ANY_SEQUENCE = any_instance(Sequence, name="ANY_SEQUENCE")
+ANY_SET = any_instance(set, name="ANY_SET")
+ANY_STR = any_instance(str, name="ANY_STR")
+ANY_TUPLE = any_instance(tuple, name="ANY_TUPLE")
+
+
+class AnyAwareDatetime(AnyBase):
+    def match(self, value: Any) -> bool:
+        return isinstance(value, datetime) and value.tzinfo is not None
+
+    def __repr__(self) -> str:
+        return "ANY_AWARE_DATETIME"
+
+
+ANY_AWARE_DATETIME: Any = AnyAwareDatetime()

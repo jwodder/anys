@@ -19,6 +19,7 @@ from test_lib import assert_equal, assert_not_equal
 )
 def test_any_func_eq(func: Callable, value: Any) -> None:
     assert_equal(any_func(func), value)
+    assert repr(any_func(func)) == f"AnyFunc({func!r})"
 
 
 @pytest.mark.parametrize(
@@ -37,3 +38,4 @@ def test_any_func_eq(func: Callable, value: Any) -> None:
 )
 def test_any_func_neq(func: Callable, value: Any) -> None:
     assert_not_equal(any_func(func), value)
+    assert repr(any_func(func)) == f"AnyFunc({func!r})"
