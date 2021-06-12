@@ -3,7 +3,7 @@ from operator import lt
 from typing import Any, Callable
 import pytest
 from anys import any_func
-from test_lib import assert_equal
+from test_lib import assert_equal, assert_not_equal
 
 
 @pytest.mark.parametrize(
@@ -17,5 +17,23 @@ from test_lib import assert_equal
         (partial(lt, 5), 42),
     ],
 )
-def test_any_func_matches(func: Callable, value: Any) -> None:
+def test_any_func_eq(func: Callable, value: Any) -> None:
     assert_equal(any_func(func), value)
+
+
+@pytest.mark.parametrize(
+    "func,value",
+    [
+        (lambda x: x < 5, 42),
+        (lambda x, y="foo": x in y, "bar"),
+        (callable, 42),
+        (len, ""),
+        (len, []),
+        (partial(lt, 5), -5),
+        (len, 42),
+        (lambda x, y="foo": x in y, 42),
+        (partial(lt, 5), "foo"),
+    ],
+)
+def test_any_func_neq(func: Callable, value: Any) -> None:
+    assert_not_equal(any_func(func), value)
