@@ -17,11 +17,11 @@ from typing import Any, Callable, Generic, Optional, Tuple, TypeVar, Union
 T = TypeVar("T")
 
 if sys.version_info[:2] >= (3, 10):
-    InstanceCls = Union[
+    ClassInfo = Union[
         type, types.Union, Tuple[Union[type, types.Union, Tuple[Any, ...]], ...]
     ]
 else:
-    InstanceCls = Union[type, Tuple[Union[type, Tuple[Any, ...]], ...]]
+    ClassInfo = Union[type, Tuple[Union[type, Tuple[Any, ...]], ...]]
 
 
 class AnyRepr(Generic[T]):
@@ -38,7 +38,7 @@ class AnyFunc(AnyRepr[Callable]):
 
 
 class AnyInstance:
-    def __init__(self, arg: InstanceCls, *, name: Optional[str] = None) -> None:
+    def __init__(self, arg: ClassInfo, *, name: Optional[str] = None) -> None:
         self.arg = arg
         self.name = name
 
@@ -52,5 +52,17 @@ class AnyInstance:
         return isinstance(other, self.arg)
 
 
-ANY_STR = AnyInstance(str, name="ANY_STR")
-ANY_INT = AnyInstance(int, name="ANY_INT")
+# Anys need to be constructed via functions that return typing.Any so that
+# comparing them doesn't trigger a "comparison-overlap" type error.
+
+
+def any_func(func: Callable) -> Any:
+    return AnyFunc(func)
+
+
+def any_instance(classinfo: ClassInfo, *, name: Optional[str] = None) -> Any:
+    return AnyInstance(classinfo, name=name)
+
+
+ANY_STR = any_instance(str, name="ANY_STR")
+ANY_INT = any_instance(int, name="ANY_INT")

@@ -1,6 +1,6 @@
-from typing import Any, Callable
+from typing import Any
 import pytest
-from anys import ANY_INT, ANY_STR, AnyInstance
+from anys import ANY_INT, ANY_STR, ClassInfo, any_instance
 
 
 @pytest.mark.parametrize(
@@ -14,8 +14,8 @@ from anys import ANY_INT, ANY_STR, AnyInstance
         ((str, list), [1, 2, 3]),
     ],
 )
-def test_any_instance(classinfo: Callable, value: Any) -> None:
-    a = AnyInstance(classinfo)
+def test_any_instance(classinfo: ClassInfo, value: Any) -> None:
+    a = any_instance(classinfo)
     assert a == value
     assert value == a
     assert {"foo": value} == {"foo": a}

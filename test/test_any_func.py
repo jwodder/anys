@@ -2,7 +2,7 @@ from functools import partial
 from operator import lt
 from typing import Any, Callable
 import pytest
-from anys import AnyFunc
+from anys import any_func
 
 
 @pytest.mark.parametrize(
@@ -17,7 +17,7 @@ from anys import AnyFunc
     ],
 )
 def test_any_func_matches(func: Callable, value: Any) -> None:
-    a = AnyFunc(func)
+    a = any_func(func)
     assert a == value
     assert value == a
     assert {"foo": value} == {"foo": a}
