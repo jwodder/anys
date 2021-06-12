@@ -112,3 +112,12 @@ class Maybe(AnyRepr[Any]):
 
 def maybe(value: Any) -> Any:
     return Maybe(value)
+
+
+class Not(AnyRepr[Any]):
+    def match(self, value: Any) -> bool:
+        return bool(self.arg != value)
+
+
+def not_(value: Any) -> Any:
+    return Not(value)
