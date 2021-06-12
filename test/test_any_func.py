@@ -3,6 +3,7 @@ from operator import lt
 from typing import Any, Callable
 import pytest
 from anys import any_func
+from test_lib import assert_equal
 
 
 @pytest.mark.parametrize(
@@ -17,10 +18,4 @@ from anys import any_func
     ],
 )
 def test_any_func_matches(func: Callable, value: Any) -> None:
-    a = any_func(func)
-    assert a == value
-    assert value == a
-    assert {"foo": value} == {"foo": a}
-    assert {"foo": a} == {"foo": value}
-    assert [1, 2, value, 3] == [1, 2, a, 3]
-    assert [1, 2, a, 3] == [1, 2, value, 3]
+    assert_equal(any_func(func), value)

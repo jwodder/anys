@@ -10,6 +10,7 @@ __author_email__ = "anys@varonathe.org"
 __license__ = "MIT"
 __url__ = "https://github.com/jwodder/anys"
 
+from abc import ABC, abstractmethod
 import sys
 import types
 from typing import Any, Callable, Generic, Optional, Tuple, TypeVar, Union
@@ -24,6 +25,18 @@ else:
     ClassInfo = Union[type, Tuple[Union[type, Tuple[Any, ...]], ...]]
 
 
+class AnyBase(ABC):
+    @abstractmethod
+    def match(self, value: Any) -> bool:
+        ...
+
+    def __eq__(self, other: Any) -> bool:
+        try:
+            return self.match(other)
+        except (TypeError, ValueError):
+            return False
+
+
 class AnyRepr(Generic[T]):
     def __init__(self, arg: T) -> None:
         self.arg = arg
@@ -32,12 +45,12 @@ class AnyRepr(Generic[T]):
         return f"{type(self).__name__}({self.arg!r})"
 
 
-class AnyFunc(AnyRepr[Callable]):
-    def __eq__(self, other: Any) -> bool:
-        return bool(self.arg(other))
+class AnyFunc(AnyRepr[Callable], AnyBase):
+    def match(self, value: Any) -> bool:
+        return bool(self.arg(value))
 
 
-class AnyInstance:
+class AnyInstance(AnyBase):
     def __init__(self, arg: ClassInfo, *, name: Optional[str] = None) -> None:
         self.arg = arg
         self.name = name
@@ -48,8 +61,8 @@ class AnyInstance:
         else:
             return f"{type(self).__name__}({self.arg!r})"
 
-    def __eq__(self, other: Any) -> bool:
-        return isinstance(other, self.arg)
+    def match(self, value: Any) -> bool:
+        return isinstance(value, self.arg)
 
 
 # Anys need to be constructed via functions that return typing.Any so that

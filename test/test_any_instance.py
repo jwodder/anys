@@ -1,6 +1,7 @@
 from typing import Any
 import pytest
 from anys import ANY_INT, ANY_STR, ClassInfo, any_instance
+from test_lib import assert_equal
 
 
 @pytest.mark.parametrize(
@@ -15,30 +16,14 @@ from anys import ANY_INT, ANY_STR, ClassInfo, any_instance
     ],
 )
 def test_any_instance(classinfo: ClassInfo, value: Any) -> None:
-    a = any_instance(classinfo)
-    assert a == value
-    assert value == a
-    assert {"foo": value} == {"foo": a}
-    assert {"foo": a} == {"foo": value}
-    assert [1, 2, value, 3] == [1, 2, a, 3]
-    assert [1, 2, a, 3] == [1, 2, value, 3]
+    assert_equal(any_instance(classinfo), value)
 
 
 @pytest.mark.parametrize("value", ["", "foo"])
 def test_any_str(value: str) -> None:
-    assert ANY_STR == value
-    assert value == ANY_STR
-    assert {"foo": value} == {"foo": ANY_STR}
-    assert {"foo": ANY_STR} == {"foo": value}
-    assert [1, 2, value, 3] == [1, 2, ANY_STR, 3]
-    assert [1, 2, ANY_STR, 3] == [1, 2, value, 3]
+    assert_equal(ANY_STR, value)
 
 
 @pytest.mark.parametrize("value", [-23, 0, 42])
 def test_any_int(value: int) -> None:
-    assert ANY_INT == value
-    assert value == ANY_INT
-    assert {"foo": value} == {"foo": ANY_INT}
-    assert {"foo": ANY_INT} == {"foo": value}
-    assert [1, 2, value, 3] == [1, 2, ANY_INT, 3]
-    assert [1, 2, ANY_INT, 3] == [1, 2, value, 3]
+    assert_equal(ANY_INT, value)
