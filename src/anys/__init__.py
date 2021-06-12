@@ -1,3 +1,15 @@
+"""
+Matchers for pytest
+
+Visit <https://github.com/jwodder/anys> for more information.
+"""
+
+__version__ = "0.1.0.dev1"
+__author__ = "John Thorvald Wodder II"
+__author_email__ = "anys@varonathe.org"
+__license__ = "MIT"
+__url__ = "https://github.com/jwodder/anys"
+
 import sys
 import types
 from typing import Any, Callable, Generic, Optional, Tuple, TypeVar, Union
@@ -5,9 +17,12 @@ from typing import Any, Callable, Generic, Optional, Tuple, TypeVar, Union
 T = TypeVar("T")
 
 if sys.version_info[:2] >= (3, 10):
-    InstanceCls = Union[type, types.Union, Tuple[Union[type, types.Union, Tuple[Any, ...]], ...]]
+    InstanceCls = Union[
+        type, types.Union, Tuple[Union[type, types.Union, Tuple[Any, ...]], ...]
+    ]
 else:
     InstanceCls = Union[type, Tuple[Union[type, Tuple[Any, ...]], ...]]
+
 
 class AnyRepr(Generic[T]):
     def __init__(self, arg: T) -> None:
@@ -20,6 +35,7 @@ class AnyRepr(Generic[T]):
 class AnyFunc(AnyRepr[Callable]):
     def __eq__(self, other: Any) -> bool:
         return bool(self.arg(other))
+
 
 class AnyInstance:
     def __init__(self, arg: InstanceCls, *, name: Optional[str] = None) -> None:
@@ -34,6 +50,7 @@ class AnyInstance:
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, self.arg)
+
 
 ANY_STR = AnyInstance(str, name="ANY_STR")
 ANY_INT = AnyInstance(int, name="ANY_INT")

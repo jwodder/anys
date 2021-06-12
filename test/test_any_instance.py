@@ -2,14 +2,18 @@ from typing import Any, Callable
 import pytest
 from anys import ANY_INT, ANY_STR, AnyInstance
 
-@pytest.mark.parametrize("classinfo,value", [
-    (str, "foo"),
-    (int, 42),
-    (tuple, ()),
-    (list, [1, 2, 3]),
-    ((str, list), "foo"),
-    ((str, list), [1, 2, 3]),
-])
+
+@pytest.mark.parametrize(
+    "classinfo,value",
+    [
+        (str, "foo"),
+        (int, 42),
+        (tuple, ()),
+        (list, [1, 2, 3]),
+        ((str, list), "foo"),
+        ((str, list), [1, 2, 3]),
+    ],
+)
 def test_any_instance(classinfo: Callable, value: Any) -> None:
     a = AnyInstance(classinfo)
     assert a == value
