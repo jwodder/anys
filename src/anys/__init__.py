@@ -14,9 +14,10 @@ from abc import ABC, abstractmethod
 from collections.abc import Iterable, Iterator, Mapping, Sequence
 from datetime import datetime
 from numbers import Number
+import re
 import sys
 import types
-from typing import Any, Callable, Generic, Optional, Tuple, TypeVar, Union
+from typing import Any, AnyStr, Callable, Generic, Optional, Tuple, TypeVar, Union
 
 T = TypeVar("T")
 
@@ -121,3 +122,30 @@ class Not(AnyRepr[Any]):
 
 def not_(value: Any) -> Any:
     return Not(value)
+
+
+class AnyMatch(AnyRepr[Union[AnyStr, re.Pattern[AnyStr]]]):
+    def match(self, value: Any) -> bool:
+        return bool(re.match(self.arg, value))
+
+
+def any_match(value: Union[AnyStr, re.Pattern[AnyStr]]) -> Any:
+    return AnyMatch(value)
+
+
+class AnySearch(AnyRepr[Union[AnyStr, re.Pattern[AnyStr]]]):
+    def match(self, value: Any) -> bool:
+        return bool(re.search(self.arg, value))
+
+
+def any_search(value: Union[AnyStr, re.Pattern[AnyStr]]) -> Any:
+    return AnySearch(value)
+
+
+class AnyFullmatch(AnyRepr[Union[AnyStr, re.Pattern[AnyStr]]]):
+    def match(self, value: Any) -> bool:
+        return bool(re.fullmatch(self.arg, value))
+
+
+def any_fullmatch(value: Union[AnyStr, re.Pattern[AnyStr]]) -> Any:
+    return AnyFullmatch(value)
