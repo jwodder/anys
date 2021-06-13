@@ -161,3 +161,12 @@ class AnyIn(AnyRepr[Iterable[T]]):
 
 def any_in(iterable: Iterable) -> Any:
     return AnyIn(iterable)
+
+
+class AnySubstr(AnyRepr[AnyStr]):
+    def match(self, value: Any) -> bool:
+        return bool(value in self.arg)
+
+
+def any_substr(value: AnyStr) -> Any:
+    return AnySubstr(value)
