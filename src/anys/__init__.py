@@ -17,7 +17,7 @@ from numbers import Number
 import re
 import sys
 import types
-from typing import Any, AnyStr, Callable, Generic, Optional, Tuple, TypeVar, Union
+from typing import Any, AnyStr, Callable, Generic, List, Optional, Tuple, TypeVar, Union
 
 T = TypeVar("T")
 
@@ -149,3 +149,15 @@ class AnyFullmatch(AnyRepr[Union[AnyStr, re.Pattern[AnyStr]]]):
 
 def any_fullmatch(value: Union[AnyStr, re.Pattern[AnyStr]]) -> Any:
     return AnyFullmatch(value)
+
+
+class AnyIn(AnyRepr[Iterable[T]]):
+    def __init__(self, arg: Iterable[T]) -> None:
+        self.arg: List[T] = list(arg)
+
+    def match(self, value: Any) -> bool:
+        return bool(any(a == value for a in self.arg))
+
+
+def any_in(iterable: Iterable) -> Any:
+    return AnyIn(iterable)
