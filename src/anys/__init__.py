@@ -54,6 +54,11 @@ class AnyFunc(AnyRepr[Callable]):
         return bool(self.arg(value))
 
 
+# Anys need to be constructed via functions that return typing.Any so that
+# comparing them against values with more restrictive types doesn't trigger a
+# "comparison-overlap" type error in mypy.
+
+
 def any_func(func: Callable) -> Any:
     return AnyFunc(func)
 
