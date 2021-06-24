@@ -41,6 +41,30 @@ class AnyBase(ABC):
         except (TypeError, ValueError):
             return False
 
+    def __and__(self, other: Any) -> Any:
+        if isinstance(other, AnyBase):
+            parts: List[AnyBase] = []
+            for s in [self, other]:
+                if isinstance(s, AnyAnd):
+                    parts.extend(s.args)
+                else:
+                    parts.append(s)
+            return AnyAnd(*parts)
+        else:
+            return NotImplemented  # pragma: no cover
+
+    def __or__(self, other: Any) -> Any:
+        if isinstance(other, AnyBase):
+            parts: List[AnyBase] = []
+            for s in [self, other]:
+                if isinstance(s, AnyOr):
+                    parts.extend(s.args)
+                else:
+                    parts.append(s)
+            return AnyOr(*parts)
+        else:
+            return NotImplemented  # pragma: no cover
+
 
 class AnyArg(AnyBase, Generic[T]):
     def __init__(self, arg: T, *, name: Optional[str] = None) -> None:
@@ -326,3 +350,22 @@ ANY_AWARE_TIME_STR = any_fullmatch(
     re.compile(f"{TIME_RGX}{TZ_RGX}"), name="ANY_AWARE_TIME_STR"
 )
 ANY_NAIVE_TIME_STR = any_fullmatch(re.compile(TIME_RGX), name="ANY_NAIVE_TIME_STR")
+
+
+class AnyArgs(AnyBase):
+    def __init__(self, *args: AnyBase, name: Optional[str] = None) -> None:
+        self.args: List[AnyBase] = list(args)
+        self.name = name
+
+    def __repr__(self) -> str:
+        return "{}({})".format(type(self).__name__, ", ".join(map(repr, self.args)))
+
+
+class AnyAnd(AnyArgs):
+    def match(self, value: Any) -> bool:
+        return bool(all(a == value for a in self.args))
+
+
+class AnyOr(AnyArgs):
+    def match(self, value: Any) -> bool:
+        return bool(any(a == value for a in self.args))
