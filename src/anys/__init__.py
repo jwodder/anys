@@ -41,15 +41,19 @@ class AnyBase(ABC):
             return False
 
 
-class AnyRepr(AnyBase, Generic[T]):
-    def __init__(self, arg: T) -> None:
+class AnyArg(AnyBase, Generic[T]):
+    def __init__(self, arg: T, *, name: Optional[str] = None) -> None:
         self.arg = arg
+        self.name = name
 
     def __repr__(self) -> str:
-        return f"{type(self).__name__}({self.arg!r})"
+        if self.name is not None:
+            return self.name
+        else:
+            return f"{type(self).__name__}({self.arg!r})"
 
 
-class AnyFunc(AnyRepr[Callable]):
+class AnyFunc(AnyArg[Callable]):
     def match(self, value: Any) -> bool:
         return bool(self.arg(value))
 
@@ -63,17 +67,7 @@ def any_func(func: Callable) -> Any:
     return AnyFunc(func)
 
 
-class AnyInstance(AnyBase):
-    def __init__(self, arg: ClassInfo, *, name: Optional[str] = None) -> None:
-        self.arg = arg
-        self.name = name
-
-    def __repr__(self) -> str:
-        if self.name is not None:
-            return self.name
-        else:
-            return f"{type(self).__name__}({self.arg!r})"
-
+class AnyInstance(AnyArg[ClassInfo]):
     def match(self, value: Any) -> bool:
         return isinstance(value, self.arg)
 
@@ -111,7 +105,7 @@ class AnyAwareDatetime(AnyBase):
 ANY_AWARE_DATETIME: Any = AnyAwareDatetime()
 
 
-class Maybe(AnyRepr[Any]):
+class Maybe(AnyArg[Any]):
     def match(self, value: Any) -> bool:
         return bool(value is None or self.arg == value)
 
@@ -120,7 +114,7 @@ def maybe(value: Any) -> Any:
     return Maybe(value)
 
 
-class Not(AnyRepr[Any]):
+class Not(AnyArg[Any]):
     def match(self, value: Any) -> bool:
         return bool(self.arg != value)
 
@@ -129,7 +123,7 @@ def not_(value: Any) -> Any:
     return Not(value)
 
 
-class AnyMatch(AnyRepr[Union[AnyStr, re.Pattern[AnyStr]]]):
+class AnyMatch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
     def match(self, value: Any) -> bool:
         return bool(re.match(self.arg, value))
 
@@ -138,7 +132,7 @@ def any_match(value: Union[AnyStr, re.Pattern[AnyStr]]) -> Any:
     return AnyMatch(value)
 
 
-class AnySearch(AnyRepr[Union[AnyStr, re.Pattern[AnyStr]]]):
+class AnySearch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
     def match(self, value: Any) -> bool:
         return bool(re.search(self.arg, value))
 
@@ -147,7 +141,7 @@ def any_search(value: Union[AnyStr, re.Pattern[AnyStr]]) -> Any:
     return AnySearch(value)
 
 
-class AnyFullmatch(AnyRepr[Union[AnyStr, re.Pattern[AnyStr]]]):
+class AnyFullmatch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
     def match(self, value: Any) -> bool:
         return bool(re.fullmatch(self.arg, value))
 
@@ -156,9 +150,10 @@ def any_fullmatch(value: Union[AnyStr, re.Pattern[AnyStr]]) -> Any:
     return AnyFullmatch(value)
 
 
-class AnyIn(AnyRepr[Iterable[T]]):
-    def __init__(self, arg: Iterable[T]) -> None:
+class AnyIn(AnyArg[Iterable[T]]):
+    def __init__(self, arg: Iterable[T], *, name: Optional[str] = None) -> None:
         self.arg: List[T] = list(arg)
+        self.name = name
 
     def match(self, value: Any) -> bool:
         return bool(any(a == value for a in self.arg))
@@ -168,7 +163,7 @@ def any_in(iterable: Iterable) -> Any:
     return AnyIn(iterable)
 
 
-class AnySubstr(AnyRepr[AnyStr]):
+class AnySubstr(AnyArg[AnyStr]):
     def match(self, value: Any) -> bool:
         return bool(value in self.arg)
 
