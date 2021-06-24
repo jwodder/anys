@@ -14,6 +14,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Iterable, Iterator, Mapping, Sequence
 from datetime import datetime
 from numbers import Number
+import operator
 import re
 import sys
 import types
@@ -248,3 +249,7 @@ class AnyGE(AnyArg[Any]):
 
 def any_ge(arg: Any) -> Any:
     return AnyGE(arg)
+
+
+ANY_TRUTHY = AnyFunc(bool, name="ANY_TRUTHY")
+ANY_FALSY = AnyFunc(operator.not_, name="ANY_FALSY")
