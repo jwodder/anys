@@ -212,3 +212,39 @@ class AnyWithAttrs(AnyArg[Mapping]):
 
 def any_with_attrs(mapping: Mapping) -> Any:
     return AnyWithAttrs(mapping)
+
+
+class AnyLT(AnyArg[Any]):
+    def match(self, value: Any) -> bool:
+        return bool(value < self.arg)
+
+
+def any_lt(arg: Any) -> Any:
+    return AnyLT(arg)
+
+
+class AnyLE(AnyArg[Any]):
+    def match(self, value: Any) -> bool:
+        return bool(value <= self.arg)
+
+
+def any_le(arg: Any) -> Any:
+    return AnyLE(arg)
+
+
+class AnyGT(AnyArg[Any]):
+    def match(self, value: Any) -> bool:
+        return bool(value > self.arg)
+
+
+def any_gt(arg: Any) -> Any:
+    return AnyGT(arg)
+
+
+class AnyGE(AnyArg[Any]):
+    def match(self, value: Any) -> bool:
+        return bool(value >= self.arg)
+
+
+def any_ge(arg: Any) -> Any:
+    return AnyGE(arg)
