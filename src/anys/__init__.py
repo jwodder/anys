@@ -53,14 +53,27 @@ __license__ = "MIT"
 __url__ = "https://github.com/jwodder/anys"
 
 from abc import ABC, abstractmethod
-from collections.abc import Iterable, Iterator, Mapping, Sequence
+from collections import abc
 from datetime import date, datetime, time
 from numbers import Number
 import operator
 import re
 import sys
 import types
-from typing import Any, AnyStr, Callable, Generic, List, Optional, Tuple, TypeVar, Union
+from typing import (
+    Any,
+    AnyStr,
+    Callable,
+    Generic,
+    Iterable,
+    List,
+    Mapping,
+    Optional,
+    Pattern,
+    Tuple,
+    TypeVar,
+    Union,
+)
 
 T = TypeVar("T")
 
@@ -213,12 +226,12 @@ ANY_DATETIME = any_instance(datetime, name="ANY_DATETIME")
 ANY_DICT = any_instance(dict, name="ANY_DICT")
 ANY_FLOAT = any_instance(float, name="ANY_FLOAT")
 ANY_INT = any_instance(int, name="ANY_INT")
-ANY_ITERABLE = any_instance(Iterable, name="ANY_ITERABLE")
-ANY_ITERATOR = any_instance(Iterator, name="ANY_ITERATOR")
+ANY_ITERABLE = any_instance(abc.Iterable, name="ANY_ITERABLE")
+ANY_ITERATOR = any_instance(abc.Iterator, name="ANY_ITERATOR")
 ANY_LIST = any_instance(list, name="ANY_LIST")
-ANY_MAPPING = any_instance(Mapping, name="ANY_MAPPING")
+ANY_MAPPING = any_instance(abc.Mapping, name="ANY_MAPPING")
 ANY_NUMBER = any_instance(Number, name="ANY_NUMBER")
-ANY_SEQUENCE = any_instance(Sequence, name="ANY_SEQUENCE")
+ANY_SEQUENCE = any_instance(abc.Sequence, name="ANY_SEQUENCE")
 ANY_SET = any_instance(set, name="ANY_SET")
 ANY_STR = any_instance(str, name="ANY_STR")
 ANY_TIME = any_instance(time, name="ANY_TIME")
@@ -306,12 +319,12 @@ def not_(arg: Any) -> Any:
     return Not(arg)
 
 
-class AnyMatch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
+class AnyMatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
     def match(self, value: Any) -> bool:
         return bool(re.match(self.arg, value))
 
 
-def any_match(patten: Union[AnyStr, re.Pattern[AnyStr]]) -> Any:
+def any_match(patten: Union[AnyStr, Pattern[AnyStr]]) -> Any:
     """
     Returns a matcher that matches any string ``s`` for which
     ``re.match(pattern, s)`` succeeds
@@ -319,12 +332,12 @@ def any_match(patten: Union[AnyStr, re.Pattern[AnyStr]]) -> Any:
     return AnyMatch(patten)
 
 
-class AnySearch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
+class AnySearch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
     def match(self, value: Any) -> bool:
         return bool(re.search(self.arg, value))
 
 
-def any_search(pattern: Union[AnyStr, re.Pattern[AnyStr]]) -> Any:
+def any_search(pattern: Union[AnyStr, Pattern[AnyStr]]) -> Any:
     """
     Returns a matcher that matches any string ``s`` for which
     ``re.search(pattern, s)`` succeeds
@@ -332,13 +345,13 @@ def any_search(pattern: Union[AnyStr, re.Pattern[AnyStr]]) -> Any:
     return AnySearch(pattern)
 
 
-class AnyFullmatch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
+class AnyFullmatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
     def match(self, value: Any) -> bool:
         return bool(re.fullmatch(self.arg, value))
 
 
 def any_fullmatch(
-    pattern: Union[AnyStr, re.Pattern[AnyStr]], *, name: Optional[str] = None
+    pattern: Union[AnyStr, Pattern[AnyStr]], *, name: Optional[str] = None
 ) -> Any:
     """
     Returns a matcher that matches any string ``s`` for which

@@ -1,5 +1,5 @@
 import re
-from typing import Any, AnyStr, Union
+from typing import Any, AnyStr, Pattern, Union
 import pytest
 from anys import any_fullmatch, any_match, any_search
 from test_lib import assert_equal, assert_not_equal
@@ -18,7 +18,7 @@ from test_lib import assert_equal, assert_not_equal
         (re.compile(br"\d+"), b"123abc"),
     ],
 )
-def test_any_match_eq(rgx: Union[AnyStr, re.Pattern[AnyStr]], value: AnyStr) -> None:
+def test_any_match_eq(rgx: Union[AnyStr, Pattern[AnyStr]], value: AnyStr) -> None:
     assert_equal(any_match(rgx), value)
     assert repr(any_match(rgx)) == f"AnyMatch({rgx!r})"
 
@@ -40,7 +40,7 @@ def test_any_match_eq(rgx: Union[AnyStr, re.Pattern[AnyStr]], value: AnyStr) -> 
         (re.compile(r"\d+"), 42),
     ],
 )
-def test_any_match_neq(rgx: Union[AnyStr, re.Pattern[AnyStr]], value: Any) -> None:
+def test_any_match_neq(rgx: Union[AnyStr, Pattern[AnyStr]], value: Any) -> None:
     assert_not_equal(any_match(rgx), value)
 
 
@@ -59,7 +59,7 @@ def test_any_match_neq(rgx: Union[AnyStr, re.Pattern[AnyStr]], value: Any) -> No
         (br"\d+", b"abc123"),
     ],
 )
-def test_any_search_eq(rgx: Union[AnyStr, re.Pattern[AnyStr]], value: AnyStr) -> None:
+def test_any_search_eq(rgx: Union[AnyStr, Pattern[AnyStr]], value: AnyStr) -> None:
     assert_equal(any_search(rgx), value)
     assert repr(any_search(rgx)) == f"AnySearch({rgx!r})"
 
@@ -79,7 +79,7 @@ def test_any_search_eq(rgx: Union[AnyStr, re.Pattern[AnyStr]], value: AnyStr) ->
         (re.compile(r"\d+"), 42),
     ],
 )
-def test_any_search_neq(rgx: Union[AnyStr, re.Pattern[AnyStr]], value: Any) -> None:
+def test_any_search_neq(rgx: Union[AnyStr, Pattern[AnyStr]], value: Any) -> None:
     assert_not_equal(any_search(rgx), value)
 
 
@@ -92,9 +92,7 @@ def test_any_search_neq(rgx: Union[AnyStr, re.Pattern[AnyStr]], value: Any) -> N
         (re.compile(br"\d+"), b"12345"),
     ],
 )
-def test_any_fullmatch_eq(
-    rgx: Union[AnyStr, re.Pattern[AnyStr]], value: AnyStr
-) -> None:
+def test_any_fullmatch_eq(rgx: Union[AnyStr, Pattern[AnyStr]], value: AnyStr) -> None:
     assert_equal(any_fullmatch(rgx), value)
     assert repr(any_fullmatch(rgx)) == f"AnyFullmatch({rgx!r})"
 
@@ -118,5 +116,5 @@ def test_any_fullmatch_eq(
         (re.compile(r"\d+"), 42),
     ],
 )
-def test_any_fullmatch_neq(rgx: Union[AnyStr, re.Pattern[AnyStr]], value: Any) -> None:
+def test_any_fullmatch_neq(rgx: Union[AnyStr, Pattern[AnyStr]], value: Any) -> None:
     assert_not_equal(any_fullmatch(rgx), value)
