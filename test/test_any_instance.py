@@ -5,9 +5,11 @@ from typing import Any
 import pytest
 from anys import (
     ANY_AWARE_DATETIME,
+    ANY_AWARE_TIME,
     ANY_BOOL,
     ANY_BYTES,
     ANY_COMPLEX,
+    ANY_DATE,
     ANY_DATETIME,
     ANY_DICT,
     ANY_FLOAT,
@@ -20,6 +22,8 @@ from anys import (
     ANY_SEQUENCE,
     ANY_SET,
     ANY_STR,
+    ANY_STRICT_DATE,
+    ANY_TIME,
     ANY_TUPLE,
     ClassInfo,
     any_instance,
@@ -100,6 +104,42 @@ def test_any_complex_neq(value: Any) -> None:
 
 def test_any_complex_repr() -> None:
     assert repr(ANY_COMPLEX) == "ANY_COMPLEX"
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        date(2021, 6, 12),
+        datetime(2021, 6, 12, 18, 3, 6),
+        datetime(2021, 6, 12, 18, 3, 6, tzinfo=timezone.utc),
+    ],
+)
+def test_any_date_eq(value: date) -> None:
+    assert_equal(ANY_DATE, value)
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        time(18, 3, 6),
+        timezone.utc,
+        None,
+        42,
+        "foo",
+        (),
+        3.14,
+        [],
+        {},
+        b"bytes",
+        "2021-06-12",
+    ],
+)
+def test_any_date_neq(value: Any) -> None:
+    assert_not_equal(ANY_DATE, value)
+
+
+def test_any_date_repr() -> None:
+    assert repr(ANY_DATE) == "ANY_DATE"
 
 
 @pytest.mark.parametrize(
@@ -320,6 +360,74 @@ def test_any_str_repr() -> None:
     assert repr(ANY_STR) == "ANY_STR"
 
 
+def test_any_strict_date_eq() -> None:
+    assert_equal(ANY_STRICT_DATE, date(2021, 6, 12))
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        datetime(2021, 6, 12, 18, 3, 6),
+        datetime(2021, 6, 12, 18, 3, 6, tzinfo=timezone.utc),
+        time(18, 3, 6),
+        timezone.utc,
+        None,
+        42,
+        "foo",
+        (),
+        3.14,
+        [],
+        {},
+        b"bytes",
+        "2021-06-12",
+    ],
+)
+def test_any_strict_date_neq(value: Any) -> None:
+    assert_not_equal(ANY_STRICT_DATE, value)
+
+
+def test_any_strict_date_repr() -> None:
+    assert repr(ANY_STRICT_DATE) == "ANY_STRICT_DATE"
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        time(18, 3, 6),
+        time(18, 3, 6, tzinfo=timezone.utc),
+    ],
+)
+def test_any_time_eq(value: time) -> None:
+    assert_equal(ANY_TIME, value)
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        date(2021, 6, 12),
+        datetime(2021, 6, 12, 18, 3, 6),
+        datetime(2021, 6, 12, 18, 3, 6, tzinfo=timezone.utc),
+        timezone.utc,
+        None,
+        42,
+        "foo",
+        (),
+        3.14,
+        [],
+        {},
+        b"bytes",
+        "18:03:06",
+        "18:03:06+00:00",
+    ],
+)
+def test_any_time_neq(value: Any) -> None:
+    assert_not_equal(ANY_TIME, value)
+
+
+def test_any_time_repr() -> None:
+    assert repr(ANY_TIME) == "ANY_TIME"
+
+
 @pytest.mark.parametrize("value", [(), (1,), (1, 2, 3)])
 def test_any_tuple_eq(value: tuple) -> None:
     assert_equal(ANY_TUPLE, value)
@@ -364,3 +472,33 @@ def test_any_aware_datetime_neq(value: Any) -> None:
 
 def test_any_aware_datetime_repr() -> None:
     assert repr(ANY_AWARE_DATETIME) == "ANY_AWARE_DATETIME"
+
+
+def test_any_aware_time_eq() -> None:
+    assert_equal(ANY_AWARE_TIME, time(18, 3, 6, tzinfo=timezone.utc))
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        datetime(2021, 6, 12, 18, 3, 6),
+        date(2021, 6, 12),
+        time(18, 3, 6),
+        timezone.utc,
+        None,
+        42,
+        "foo",
+        (),
+        3.14,
+        [],
+        {},
+        b"bytes",
+        "2021-06-12T18:03:06+00:00",
+    ],
+)
+def test_any_aware_time_neq(value: Any) -> None:
+    assert_not_equal(ANY_AWARE_TIME, value)
+
+
+def test_any_aware_time_repr() -> None:
+    assert repr(ANY_AWARE_TIME) == "ANY_AWARE_TIME"

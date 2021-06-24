@@ -12,7 +12,7 @@ __url__ = "https://github.com/jwodder/anys"
 
 from abc import ABC, abstractmethod
 from collections.abc import Iterable, Iterator, Mapping, Sequence
-from datetime import datetime
+from datetime import date, datetime, time
 from numbers import Number
 import operator
 import re
@@ -80,6 +80,7 @@ def any_instance(classinfo: ClassInfo, *, name: Optional[str] = None) -> Any:
 ANY_BOOL = any_instance(bool, name="ANY_BOOL")
 ANY_BYTES = any_instance(bytes, name="ANY_BYTES")
 ANY_COMPLEX = any_instance(complex, name="ANY_COMPLEX")
+ANY_DATE = any_instance(date, name="ANY_DATE")
 ANY_DATETIME = any_instance(datetime, name="ANY_DATETIME")
 ANY_DICT = any_instance(dict, name="ANY_DICT")
 ANY_FLOAT = any_instance(float, name="ANY_FLOAT")
@@ -92,7 +93,19 @@ ANY_NUMBER = any_instance(Number, name="ANY_NUMBER")
 ANY_SEQUENCE = any_instance(Sequence, name="ANY_SEQUENCE")
 ANY_SET = any_instance(set, name="ANY_SET")
 ANY_STR = any_instance(str, name="ANY_STR")
+ANY_TIME = any_instance(time, name="ANY_TIME")
 ANY_TUPLE = any_instance(tuple, name="ANY_TUPLE")
+
+
+class AnyStrictDate(AnyBase):
+    def match(self, value: Any) -> bool:
+        return isinstance(value, date) and not isinstance(value, datetime)
+
+    def __repr__(self) -> str:
+        return "ANY_STRICT_DATE"
+
+
+ANY_STRICT_DATE: Any = AnyStrictDate()
 
 
 class AnyAwareDatetime(AnyBase):
@@ -104,6 +117,17 @@ class AnyAwareDatetime(AnyBase):
 
 
 ANY_AWARE_DATETIME: Any = AnyAwareDatetime()
+
+
+class AnyAwareTime(AnyBase):
+    def match(self, value: Any) -> bool:
+        return isinstance(value, time) and value.tzinfo is not None
+
+    def __repr__(self) -> str:
+        return "ANY_AWARE_TIME"
+
+
+ANY_AWARE_TIME: Any = AnyAwareTime()
 
 
 class Maybe(AnyArg[Any]):
