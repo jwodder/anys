@@ -171,8 +171,10 @@ class AnyFullmatch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
         return bool(re.fullmatch(self.arg, value))
 
 
-def any_fullmatch(pattern: Union[AnyStr, re.Pattern[AnyStr]]) -> Any:
-    return AnyFullmatch(pattern)
+def any_fullmatch(
+    pattern: Union[AnyStr, re.Pattern[AnyStr]], *, name: Optional[str] = None
+) -> Any:
+    return AnyFullmatch(pattern, name=name)
 
 
 class AnyIn(AnyArg[Iterable[T]]):
@@ -277,3 +279,24 @@ def any_ge(arg: Any) -> Any:
 
 ANY_TRUTHY = AnyFunc(bool, name="ANY_TRUTHY")
 ANY_FALSY = AnyFunc(operator.not_, name="ANY_FALSY")
+
+
+DATE_RGX = r"[0-9]{4,}-(?:0[1-9]|1[012])-(?:0[1-9]|[12][0-9]|3[01])"
+TIME_RGX = r"(?:[01][0-9]|2[0-3]):[0-5][0-9](?::[0-5][0-9](?:\.[0-9]+)?)?"
+TZ_RGX = r"(?:Z|[-+][0-9]{2}(?::?[0-9]{2})?)"
+
+ANY_DATETIME_STR = any_fullmatch(
+    re.compile(f"{DATE_RGX}[T ]{TIME_RGX}(?:{TZ_RGX})?"), name="ANY_DATETIME_STR"
+)
+ANY_AWARE_DATETIME_STR = any_fullmatch(
+    re.compile(f"{DATE_RGX}[T ]{TIME_RGX}{TZ_RGX}"), name="ANY_AWARE_DATETIME_STR"
+)
+
+ANY_DATE_STR = any_fullmatch(re.compile(DATE_RGX), name="ANY_DATE_STR")
+
+ANY_TIME_STR = any_fullmatch(
+    re.compile(f"{TIME_RGX}(?:{TZ_RGX})?"), name="ANY_TIME_STR"
+)
+ANY_AWARE_TIME_STR = any_fullmatch(
+    re.compile(f"{TIME_RGX}{TZ_RGX}"), name="ANY_AWARE_TIME_STR"
+)
