@@ -182,3 +182,18 @@ class AnyContains(AnyArg[Any]):
 
 def any_contains(key: Any) -> Any:
     return AnyContains(key)
+
+
+class AnyWithEntries(AnyArg[Mapping]):
+    def match(self, value: Any) -> bool:
+        for k, v in self.arg.items():
+            try:
+                if v != value[k]:
+                    return False
+            except LookupError:
+                return False
+        return True
+
+
+def any_with_entries(mapping: Mapping) -> Any:
+    return AnyWithEntries(mapping)

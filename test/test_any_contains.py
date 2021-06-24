@@ -1,4 +1,3 @@
-from collections.abc import Iterable
 from typing import Any
 import pytest
 from anys import ANY_FLOAT, ANY_INT, ANY_STR, any_contains
@@ -23,7 +22,7 @@ from test_lib import assert_equal, assert_not_equal
         (b"abc", 97),
     ],
 )
-def test_from_any_contains_eq(seq: Iterable, value: Any) -> None:
+def test_from_any_contains_eq(seq: Any, value: Any) -> None:
     assert_equal(any_contains(value), seq)
     assert repr(any_contains(value)) == f"AnyContains({value!r})"
 
@@ -40,7 +39,8 @@ def test_from_any_contains_eq(seq: Iterable, value: Any) -> None:
         ({"foo", "bar"}, "quux"),
         ({"foo": 42, "bar": 23}, 42),
         (b"abc", 65),
+        (42, 42),
     ],
 )
-def test_from_any_contains_neq(seq: Iterable, value: Any) -> None:
+def test_from_any_contains_neq(seq: Any, value: Any) -> None:
     assert_not_equal(any_contains(value), seq)
