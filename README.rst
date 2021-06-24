@@ -1,7 +1,7 @@
-.. image:: http://www.repostatus.org/badges/latest/wip.svg
-    :target: http://www.repostatus.org/#wip
-    :alt: Project Status: WIP — Initial development is in progress, but there
-          has not yet been a stable, usable release suitable for the public.
+.. image:: http://www.repostatus.org/badges/latest/active.svg
+    :target: http://www.repostatus.org/#active
+    :alt: Project Status: Active — The project has reached a stable, usable
+          state and is being actively developed.
 
 .. image:: https://github.com/jwodder/anys/workflows/Test/badge.svg?branch=master
     :target: https://github.com/jwodder/anys/actions?workflow=Test
@@ -10,11 +10,15 @@
 .. image:: https://codecov.io/gh/jwodder/anys/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/jwodder/anys
 
+.. image:: https://img.shields.io/pypi/pyversions/anys.svg
+    :target: https://pypi.org/project/anys/
+
 .. image:: https://img.shields.io/github/license/jwodder/anys.svg
     :target: https://opensource.org/licenses/MIT
     :alt: MIT License
 
 `GitHub <https://github.com/jwodder/anys>`_
+| `PyPI <https://pypi.org/project/anys/>`_
 | `Issues <https://github.com/jwodder/anys/issues>`_
 
 ``anys`` provides matchers for pytest_-style assertions.  What's a "matcher,"
