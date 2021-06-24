@@ -18,6 +18,8 @@ from anys import (
     ANY_ITERATOR,
     ANY_LIST,
     ANY_MAPPING,
+    ANY_NAIVE_DATETIME,
+    ANY_NAIVE_TIME,
     ANY_NUMBER,
     ANY_SEQUENCE,
     ANY_SET,
@@ -282,6 +284,68 @@ def test_any_mapping_neq(value: Any) -> None:
 
 def test_any_mapping_repr() -> None:
     assert repr(ANY_MAPPING) == "ANY_MAPPING"
+
+
+def test_any_naive_datetime_eq() -> None:
+    assert_equal(ANY_NAIVE_DATETIME, datetime(2021, 6, 12, 18, 3, 6))
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        datetime(2021, 6, 12, 18, 3, 6, tzinfo=timezone.utc),
+        date(2021, 6, 12),
+        time(18, 3, 6),
+        timezone.utc,
+        None,
+        42,
+        "foo",
+        (),
+        3.14,
+        [],
+        {},
+        b"bytes",
+        "2021-06-12T18:03:06",
+    ],
+)
+def test_any_naive_datetime_neq(value: Any) -> None:
+    assert_not_equal(ANY_NAIVE_DATETIME, value)
+
+
+def test_any_naive_datetime_repr() -> None:
+    assert repr(ANY_NAIVE_DATETIME) == "ANY_NAIVE_DATETIME"
+
+
+def test_any_naive_time_eq() -> None:
+    assert_equal(ANY_NAIVE_TIME, time(18, 3, 6))
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        time(18, 3, 6, tzinfo=timezone.utc),
+        date(2021, 6, 12),
+        datetime(2021, 6, 12, 18, 3, 6),
+        datetime(2021, 6, 12, 18, 3, 6, tzinfo=timezone.utc),
+        timezone.utc,
+        None,
+        42,
+        "foo",
+        (),
+        3.14,
+        [],
+        {},
+        b"bytes",
+        "18:03:06",
+        "18:03:06+00:00",
+    ],
+)
+def test_any_naive_time_neq(value: Any) -> None:
+    assert_not_equal(ANY_NAIVE_TIME, value)
+
+
+def test_any_naive_time_repr() -> None:
+    assert repr(ANY_NAIVE_TIME) == "ANY_NAIVE_TIME"
 
 
 @pytest.mark.parametrize(

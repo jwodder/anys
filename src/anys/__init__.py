@@ -119,6 +119,17 @@ class AnyAwareDatetime(AnyBase):
 ANY_AWARE_DATETIME: Any = AnyAwareDatetime()
 
 
+class AnyNaiveDatetime(AnyBase):
+    def match(self, value: Any) -> bool:
+        return isinstance(value, datetime) and value.tzinfo is None
+
+    def __repr__(self) -> str:
+        return "ANY_NAIVE_DATETIME"
+
+
+ANY_NAIVE_DATETIME: Any = AnyNaiveDatetime()
+
+
 class AnyAwareTime(AnyBase):
     def match(self, value: Any) -> bool:
         return isinstance(value, time) and value.tzinfo is not None
@@ -128,6 +139,17 @@ class AnyAwareTime(AnyBase):
 
 
 ANY_AWARE_TIME: Any = AnyAwareTime()
+
+
+class AnyNaiveTime(AnyBase):
+    def match(self, value: Any) -> bool:
+        return isinstance(value, time) and value.tzinfo is None
+
+    def __repr__(self) -> str:
+        return "ANY_NAIVE_TIME"
+
+
+ANY_NAIVE_TIME: Any = AnyNaiveTime()
 
 
 class Maybe(AnyArg[Any]):
@@ -291,6 +313,9 @@ ANY_DATETIME_STR = any_fullmatch(
 ANY_AWARE_DATETIME_STR = any_fullmatch(
     re.compile(f"{DATE_RGX}[T ]{TIME_RGX}{TZ_RGX}"), name="ANY_AWARE_DATETIME_STR"
 )
+ANY_NAIVE_DATETIME_STR = any_fullmatch(
+    re.compile(f"{DATE_RGX}[T ]{TIME_RGX}"), name="ANY_NAIVE_DATETIME_STR"
+)
 
 ANY_DATE_STR = any_fullmatch(re.compile(DATE_RGX), name="ANY_DATE_STR")
 
@@ -300,3 +325,4 @@ ANY_TIME_STR = any_fullmatch(
 ANY_AWARE_TIME_STR = any_fullmatch(
     re.compile(f"{TIME_RGX}{TZ_RGX}"), name="ANY_AWARE_TIME_STR"
 )
+ANY_NAIVE_TIME_STR = any_fullmatch(re.compile(TIME_RGX), name="ANY_NAIVE_TIME_STR")
