@@ -110,8 +110,8 @@ class Maybe(AnyArg[Any]):
         return bool(value is None or self.arg == value)
 
 
-def maybe(value: Any) -> Any:
-    return Maybe(value)
+def maybe(arg: Any) -> Any:
+    return Maybe(arg)
 
 
 class Not(AnyArg[Any]):
@@ -119,8 +119,8 @@ class Not(AnyArg[Any]):
         return bool(self.arg != value)
 
 
-def not_(value: Any) -> Any:
-    return Not(value)
+def not_(arg: Any) -> Any:
+    return Not(arg)
 
 
 class AnyMatch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
@@ -128,8 +128,8 @@ class AnyMatch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
         return bool(re.match(self.arg, value))
 
 
-def any_match(value: Union[AnyStr, re.Pattern[AnyStr]]) -> Any:
-    return AnyMatch(value)
+def any_match(patten: Union[AnyStr, re.Pattern[AnyStr]]) -> Any:
+    return AnyMatch(patten)
 
 
 class AnySearch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
@@ -137,8 +137,8 @@ class AnySearch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
         return bool(re.search(self.arg, value))
 
 
-def any_search(value: Union[AnyStr, re.Pattern[AnyStr]]) -> Any:
-    return AnySearch(value)
+def any_search(pattern: Union[AnyStr, re.Pattern[AnyStr]]) -> Any:
+    return AnySearch(pattern)
 
 
 class AnyFullmatch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
@@ -146,8 +146,8 @@ class AnyFullmatch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
         return bool(re.fullmatch(self.arg, value))
 
 
-def any_fullmatch(value: Union[AnyStr, re.Pattern[AnyStr]]) -> Any:
-    return AnyFullmatch(value)
+def any_fullmatch(pattern: Union[AnyStr, re.Pattern[AnyStr]]) -> Any:
+    return AnyFullmatch(pattern)
 
 
 class AnyIn(AnyArg[Iterable[T]]):
@@ -168,5 +168,17 @@ class AnySubstr(AnyArg[AnyStr]):
         return bool(value in self.arg)
 
 
-def any_substr(value: AnyStr) -> Any:
-    return AnySubstr(value)
+def any_substr(s: AnyStr) -> Any:
+    return AnySubstr(s)
+
+
+class AnyContains(AnyArg[Any]):
+    def match(self, value: Any) -> bool:
+        if isinstance(self.arg, AnyBase):
+            return bool(any(self.arg == v for v in value))
+        else:
+            return bool(self.arg in value)
+
+
+def any_contains(key: Any) -> Any:
+    return AnyContains(key)
