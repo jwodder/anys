@@ -1,6 +1,48 @@
 """
 Matchers for pytest
 
+``anys`` provides matchers for pytest_-style assertions.  What's a "matcher,"
+you say?  Well, say you're writing a unit test and you want to assert that a
+given object contains the correct values.  Normally, you'd just write:
+
+.. code:: python
+
+    assert foo == {
+        "widgets": 42,
+        "name": "Alice",
+        "subfoo": {
+            "created_at": "2021-06-24T18:41:59Z",
+            "name": "Bob",
+            "widgets": 23,
+        }
+    }
+
+But wait!  What if the value of ``foo["subfoo"]["created_at"]`` can't be
+determined in advance, but you still need to check that it's a valid timestamp?
+You'd have to compare everything in ``foo`` other than that one field to the
+expected values and then separately check the timestamp field for validity.
+This is where matchers come in: they're magic objects that compare equal to any
+& all values that meet given criteria.  For the case above, ``anys`` allows you
+to just write:
+
+.. code:: python
+
+    from anys import ANY_DATETIME_STR
+
+    assert foo == {
+        "widgets": 42,
+        "name": "Alice",
+        "subfoo": {
+            "created_at": ANY_DATETIME_STR,
+            "name": "Bob",
+            "widgets": 23,
+        }
+    }
+
+and the assertion will do what you mean.
+
+.. _pytest: https://docs.pytest.org
+
 Visit <https://github.com/jwodder/anys> for more information.
 """
 
@@ -140,6 +182,12 @@ class AnyFunc(AnyArg[Callable]):
 
 
 def any_func(func: Callable) -> Any:
+    """
+    Returns a matcher that matches any value ``x`` for which ``func(x)`` is
+    true.  If ``func(x)`` raises a `TypeError` or `ValueError`, it will be
+    suppressed, and ``x == any_func(func)`` will evaluate to `False`.  All
+    other exceptions are propagated out.
+    """
     return AnyFunc(func)
 
 
@@ -149,6 +197,11 @@ class AnyInstance(AnyArg[ClassInfo]):
 
 
 def any_instance(classinfo: ClassInfo, *, name: Optional[str] = None) -> Any:
+    """
+    Returns a matcher that matches any value that is an instance of
+    ``classinfo``.  ``classinfo`` can be either a type or a tuple of types (or,
+    starting in Python 3.10, a `Union` of types).
+    """
     return AnyInstance(classinfo, name=name)
 
 
@@ -233,6 +286,10 @@ class Maybe(AnyArg[Any]):
 
 
 def maybe(arg: Any) -> Any:
+    """
+    Returns a matcher that matches `None` and any value that equals or matches
+    ``arg`` (which can be an `anys` matcher)
+    """
     return Maybe(arg)
 
 
@@ -242,6 +299,10 @@ class Not(AnyArg[Any]):
 
 
 def not_(arg: Any) -> Any:
+    """
+    Returns a matcher that matches anything that does not equal or match
+    ``arg`` (which can be an `anys` matcher)
+    """
     return Not(arg)
 
 
@@ -251,6 +312,10 @@ class AnyMatch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
 
 
 def any_match(patten: Union[AnyStr, re.Pattern[AnyStr]]) -> Any:
+    """
+    Returns a matcher that matches any string ``s`` for which
+    ``re.match(pattern, s)`` succeeds
+    """
     return AnyMatch(patten)
 
 
@@ -260,6 +325,10 @@ class AnySearch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
 
 
 def any_search(pattern: Union[AnyStr, re.Pattern[AnyStr]]) -> Any:
+    """
+    Returns a matcher that matches any string ``s`` for which
+    ``re.search(pattern, s)`` succeeds
+    """
     return AnySearch(pattern)
 
 
@@ -271,6 +340,10 @@ class AnyFullmatch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
 def any_fullmatch(
     pattern: Union[AnyStr, re.Pattern[AnyStr]], *, name: Optional[str] = None
 ) -> Any:
+    """
+    Returns a matcher that matches any string ``s`` for which
+    ``re.fullmatch(pattern, s)`` succeeds
+    """
     return AnyFullmatch(pattern, name=name)
 
 
@@ -284,6 +357,12 @@ class AnyIn(AnyArg[Iterable[T]]):
 
 
 def any_in(iterable: Iterable) -> Any:
+    """
+    Returns a matcher that matches any value that equals or matches an element
+    of ``iterable`` (which may contain `anys` matchers).  Note that, if
+    ``iterable`` is a string, only individual characters in the string will
+    match; to match substrings, use `any_substr()` instead.
+    """
     return AnyIn(iterable)
 
 
@@ -293,6 +372,7 @@ class AnySubstr(AnyArg[AnyStr]):
 
 
 def any_substr(s: AnyStr) -> Any:
+    """Returns a matcher that matches any substring of ``s``"""
     return AnySubstr(s)
 
 
@@ -305,6 +385,12 @@ class AnyContains(AnyArg[Any]):
 
 
 def any_contains(key: Any) -> Any:
+    """
+    Returns a matcher that matches any value for which ``key in value`` is
+    true.  If ``key`` is an `anys` matcher, ``value == any_contains(key)``
+    will instead be evaluated by iterating through the elements of ``value``
+    and checking whether any match ``key``.
+    """
     return AnyContains(key)
 
 
@@ -320,6 +406,12 @@ class AnyWithEntries(AnyArg[Mapping]):
 
 
 def any_with_entries(mapping: Mapping) -> Any:
+    """
+    Returns a matcher that matches any object ``obj`` such that ``obj[k] == v``
+    for all ``k,v`` in ``mapping.items()``.
+
+    The values (but not the keys) of ``mapping`` can be `anys` matchers.
+    """
     return AnyWithEntries(mapping)
 
 
@@ -335,6 +427,12 @@ class AnyWithAttrs(AnyArg[Mapping]):
 
 
 def any_with_attrs(mapping: Mapping) -> Any:
+    """
+    Returns a matcher that matches any object ``obj`` such that ``getattr(obj,
+    k) == v`` for all ``k,v`` in ``mapping.items()``.
+
+    The values (but not the keys) of ``mapping`` can be `anys` matchers.
+    """
     return AnyWithAttrs(mapping)
 
 
@@ -343,8 +441,9 @@ class AnyLT(AnyArg[Any]):
         return bool(value < self.arg)
 
 
-def any_lt(arg: Any) -> Any:
-    return AnyLT(arg)
+def any_lt(bound: Any) -> Any:
+    """Returns a matcher that matches any value less than ``bound``"""
+    return AnyLT(bound)
 
 
 class AnyLE(AnyArg[Any]):
@@ -352,8 +451,11 @@ class AnyLE(AnyArg[Any]):
         return bool(value <= self.arg)
 
 
-def any_le(arg: Any) -> Any:
-    return AnyLE(arg)
+def any_le(bound: Any) -> Any:
+    """
+    Returns a matcher that matches any value less than or equal to ``bound``
+    """
+    return AnyLE(bound)
 
 
 class AnyGT(AnyArg[Any]):
@@ -361,8 +463,9 @@ class AnyGT(AnyArg[Any]):
         return bool(value > self.arg)
 
 
-def any_gt(arg: Any) -> Any:
-    return AnyGT(arg)
+def any_gt(bound: Any) -> Any:
+    """Returns a matcher that matches any value greater than ``bound``"""
+    return AnyGT(bound)
 
 
 class AnyGE(AnyArg[Any]):
@@ -370,8 +473,11 @@ class AnyGE(AnyArg[Any]):
         return bool(value >= self.arg)
 
 
-def any_ge(arg: Any) -> Any:
-    return AnyGE(arg)
+def any_ge(bound: Any) -> Any:
+    """
+    Returns a matcher that matches any value greater than or equal to ``bound``
+    """
+    return AnyGE(bound)
 
 
 ANY_TRUTHY = AnyFunc(bool, name="ANY_TRUTHY")

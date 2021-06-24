@@ -16,6 +16,7 @@ from test_lib import assert_equal, assert_not_equal
         [1, 2, 3],
         {1, 2, 3},
         (1, 2, 3),
+        object(),
     ],
 )
 def test_any_truthy_eq_any_falsy_neq(value: Any) -> None:
