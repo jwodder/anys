@@ -197,3 +197,18 @@ class AnyWithEntries(AnyArg[Mapping]):
 
 def any_with_entries(mapping: Mapping) -> Any:
     return AnyWithEntries(mapping)
+
+
+class AnyWithAttrs(AnyArg[Mapping]):
+    def match(self, value: Any) -> bool:
+        for k, v in self.arg.items():
+            try:
+                if v != getattr(value, k):
+                    return False
+            except AttributeError:
+                return False
+        return True
+
+
+def any_with_attrs(mapping: Mapping) -> Any:
+    return AnyWithAttrs(mapping)
