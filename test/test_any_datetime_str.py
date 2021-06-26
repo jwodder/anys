@@ -4,8 +4,8 @@ import pytest
 from anys import (
     ANY_AWARE_DATETIME_STR,
     ANY_AWARE_TIME_STR,
-    ANY_DATETIME_STR,
     ANY_DATE_STR,
+    ANY_DATETIME_STR,
     ANY_NAIVE_DATETIME_STR,
     ANY_NAIVE_TIME_STR,
     ANY_TIME_STR,
