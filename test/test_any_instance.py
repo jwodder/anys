@@ -27,8 +27,8 @@ from anys import (
     ANY_STRICT_DATE,
     ANY_TIME,
     ANY_TUPLE,
+    AnyInstance,
     ClassInfo,
-    any_instance,
 )
 from test_lib import assert_equal, assert_not_equal
 
@@ -45,8 +45,8 @@ from test_lib import assert_equal, assert_not_equal
     ],
 )
 def test_any_instance_eq(classinfo: ClassInfo, value: Any) -> None:
-    assert_equal(any_instance(classinfo), value)
-    assert repr(any_instance(classinfo)) == f"AnyInstance({classinfo!r})"
+    assert_equal(AnyInstance(classinfo), value)
+    assert repr(AnyInstance(classinfo)) == f"AnyInstance({classinfo!r})"
 
 
 @pytest.mark.parametrize(
@@ -62,8 +62,8 @@ def test_any_instance_eq(classinfo: ClassInfo, value: Any) -> None:
     ],
 )
 def test_any_instance_neq(classinfo: ClassInfo, value: Any) -> None:
-    assert_not_equal(any_instance(classinfo), value)
-    assert repr(any_instance(classinfo)) == f"AnyInstance({classinfo!r})"
+    assert_not_equal(AnyInstance(classinfo), value)
+    assert repr(AnyInstance(classinfo)) == f"AnyInstance({classinfo!r})"
 
 
 @pytest.mark.parametrize("value", [True, False])

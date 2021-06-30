@@ -20,6 +20,7 @@
 `GitHub <https://github.com/jwodder/anys>`_
 | `PyPI <https://pypi.org/project/anys/>`_
 | `Issues <https://github.com/jwodder/anys/issues>`_
+| `Changelog <https://github.com/jwodder/anys/blob/master/CHANGELOG.md>`_
 
 ``anys`` provides matchers for pytest_-style assertions.  What's a "matcher,"
 you say?  Well, say you're writing a unit test and you want to assert that a
@@ -74,151 +75,151 @@ for Python 3 (You have pip, right?) to install it::
 API
 ===
 
-``anys`` provides the following functions & constants for matching against
-values meeting certain criteria.  Matching is performed by comparing a value
-against an ``anys`` matcher with ``==``, either directly or as a result of
-comparing two larger structures with ``==``.
+``anys`` provides the following classes & constants for matching against values
+meeting certain criteria.  Matching is performed by comparing a value against
+an ``anys`` matcher with ``==``, either directly or as a result of comparing
+two larger structures with ``==``.
 
 If a comparison raises a ``TypeError`` or ``ValueError`` (say, because you
-evaluated ``42 == any_match(r'\d+')``, which tries to match a regex against an
+evaluated ``42 == AnyMatch(r'\d+')``, which tries to match a regex against an
 integer), the exception is suppressed, and the comparison evaluates to
 ``False``; all other exceptions are propagated out.
 
 ``anys`` matchers can be combined using the ``&`` operator to produce new
-matchers that require both operands to succeed; for example, ``any_gt(23) &
-any_lt(42)`` will match any number between 23 and 42, exclusive, and nothing
+matchers that require both operands to succeed; for example, ``AnyGT(23) &
+AnyLT(42)`` will match any number between 23 and 42, exclusive, and nothing
 else.
 
 ``anys`` matchers can be combined using the ``|`` operator to produce new
 matchers that require at least one of the operands to succeed; for example,
 ``ANY_INT | ANY_STR`` will match any value that is an ``int`` or a ``str``.
 
-Functions
----------
+Classes
+-------
 
-Note that, unless stated otherwise, ``anys`` functions cannot take ``anys``
-matchers as arguments.
-
-.. code:: python
-
-    any_contains(key: Any)
-
-Returns a matcher that matches any value for which ``key in value`` is true.
-If ``key`` is an ``anys`` matcher, ``value == any_contains(key)`` will instead
-be evaluated by iterating through the elements of ``value`` and checking
-whether any match ``key``.
+Note that, unless stated otherwise, ``anys`` class constructors cannot take
+``anys`` matchers as arguments.
 
 .. code:: python
 
-    any_fullmatch(pattern: Union[AnyStr, re.Pattern[AnyStr]])
+    AnyContains(key: Any, /)
 
-Returns a matcher that matches any string ``s`` for which
-``re.fullmatch(pattern, s)`` succeeds
+A matcher that matches any value for which ``key in value`` is true.  If
+``key`` is an ``anys`` matcher, ``value == AnyContains(key)`` will instead be
+evaluated by iterating through the elements of ``value`` and checking whether
+any match ``key``.
 
 .. code:: python
 
-    any_func(func: Callable)
+    AnyFullmatch(pattern: Union[AnyStr, re.Pattern[AnyStr]], /)
 
-Returns a matcher that matches any value ``x`` for which ``func(x)`` is true.
-If ``func(x)`` raises a ``TypeError`` or ``ValueError``, it will be suppressed,
-and ``x == any_func(func)`` will evaluate to ``False``.  All other exceptions
+A matcher that matches any string ``s`` for which ``re.fullmatch(pattern, s)``
+succeeds
+
+.. code:: python
+
+    AnyFunc(func: Callable, /)
+
+A matcher that matches any value ``x`` for which ``func(x)`` is true.  If
+``func(x)`` raises a ``TypeError`` or ``ValueError``, it will be suppressed,
+and ``x == AnyFunc(func)`` will evaluate to ``False``.  All other exceptions
 are propagated out.
 
 .. code:: python
 
-    any_ge(bound: Any)
+    AnyGE(bound: Any, /)
 
-Returns a matcher that matches any value greater than or equal to ``bound``
-
-.. code:: python
-
-    any_gt(bound: Any)
-
-Returns a matcher that matches any value greater than ``bound``
+A matcher that matches any value greater than or equal to ``bound``
 
 .. code:: python
 
-    any_in(iterable: Iterable)
+    AnyGT(bound: Any, /)
 
-Returns a matcher that matches any value that equals or matches an element of
+A matcher that matches any value greater than ``bound``
+
+.. code:: python
+
+    AnyIn(iterable: Iterable, /)
+
+A matcher that matches any value that equals or matches an element of
 ``iterable`` (which may contain ``anys`` matchers).  Note that, if ``iterable``
 is a string, only individual characters in the string will match; to match
-substrings, use ``any_substr()`` instead.
+substrings, use ``AnySubstr()`` instead.
 
 .. code:: python
 
-    any_instance(classinfo)
+    AnyInstance(classinfo, /)
 
-Returns a matcher that matches any value that is an instance of ``classinfo``.
+A matcher that matches any value that is an instance of ``classinfo``.
 ``classinfo`` can be either a type or a tuple of types (or, starting in Python
 3.10, a ``Union`` of types).
 
-A number of pre-composed ``any_instance()`` values are provided as constants
-for your convenience; see "Constants_" below.
+A number of pre-composed ``AnyInstance()`` values are provided as constants for
+your convenience; see "Constants_" below.
 
 .. code:: python
 
-    any_le(bound: Any)
+    AnyLE(bound: Any, /)
 
-Returns a matcher that matches any value less than or equal to ``bound``
-
-.. code:: python
-
-    any_lt(bound: Any)
-
-Returns a matcher that matches any value less than ``bound``
+A matcher that matches any value less than or equal to ``bound``
 
 .. code:: python
 
-    any_match(pattern: Union[AnyStr, re.Pattern[AnyStr]])
+    AnyLT(bound: Any, /)
 
-Returns a matcher that matches any string ``s`` for which ``re.match(pattern,
-s)`` succeeds
-
-.. code:: python
-
-    any_search(pattern: Union[AnyStr, re.Pattern[AnyStr]])
-
-Returns a matcher that matches any string ``s`` for which ``re.search(pattern,
-s)`` succeeds
+A matcher that matches any value less than ``bound``
 
 .. code:: python
 
-    any_substr(s: AnyStr)
+    AnyMatch(pattern: Union[AnyStr, re.Pattern[AnyStr]], /)
 
-Returns a matcher that matches any substring of ``s``
+A matcher that matches any string ``s`` for which ``re.match(pattern, s)``
+succeeds
 
 .. code:: python
 
-    any_with_attrs(mapping: Mapping)
+    AnySearch(pattern: Union[AnyStr, re.Pattern[AnyStr]], /)
 
-Returns a matcher that matches any object ``obj`` such that ``getattr(obj, k)
-== v`` for all ``k,v`` in ``mapping.items()``.
+A matcher that matches any string ``s`` for which ``re.search(pattern, s)``
+succeeds
+
+.. code:: python
+
+    AnySubstr(s: AnyStr, /)
+
+A matcher that matches any substring of ``s``
+
+.. code:: python
+
+    AnyWithAttrs(mapping: Mapping, /)
+
+A matcher that matches any object ``obj`` such that ``getattr(obj, k) == v``
+for all ``k,v`` in ``mapping.items()``.
 
 The values (but not the keys) of ``mapping`` can be ``anys`` matchers.
 
 .. code:: python
 
-    any_with_entries(mapping: Mapping)
+    AnyWithEntries(mapping: Mapping, /)
 
-Returns a matcher that matches any object ``obj`` such that ``obj[k] == v`` for
-all ``k,v`` in ``mapping.items()``.
+A matcher that matches any object ``obj`` such that ``obj[k] == v`` for all
+``k,v`` in ``mapping.items()``.
 
 The values (but not the keys) of ``mapping`` can be ``anys`` matchers.
 
 .. code:: python
 
-    maybe(arg: Any)
+    Maybe(arg: Any, /)
 
-Returns a matcher that matches ``None`` and any value that equals or matches
-``arg`` (which can be an ``anys`` matcher)
-
-.. code:: python
-
-    not_(arg: Any)
-
-Returns a matcher that matches anything that does not equal or match ``arg``
+A matcher that matches ``None`` and any value that equals or matches ``arg``
 (which can be an ``anys`` matcher)
+
+.. code:: python
+
+    Not(arg: Any, /)
+
+A matcher that matches anything that does not equal or match ``arg`` (which can
+be an ``anys`` matcher)
 
 Constants
 ---------
@@ -274,6 +275,11 @@ Other constants:
 
 - ``ANY_FALSY`` — Matches anything considered false
 - ``ANY_TRUTHY`` — Matches anything considered true
+
+Note: If you're after a matcher that matches absolutely everything, Python
+already provides that as the `unittest.mock.ANY`__ constant.
+
+__ https://docs.python.org/3/library/unittest.mock.html#any
 
 Caveat: Custom Classes
 ======================

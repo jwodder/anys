@@ -1,6 +1,6 @@
 from typing import Any
 import pytest
-from anys import ANY_FLOAT, ANY_INT, ANY_STR, any_contains
+from anys import ANY_FLOAT, ANY_INT, ANY_STR, AnyContains
 from test_lib import assert_equal, assert_not_equal
 
 
@@ -23,8 +23,8 @@ from test_lib import assert_equal, assert_not_equal
     ],
 )
 def test_from_any_contains_eq(seq: Any, value: Any) -> None:
-    assert_equal(any_contains(value), seq)
-    assert repr(any_contains(value)) == f"AnyContains({value!r})"
+    assert_equal(AnyContains(value), seq)
+    assert repr(AnyContains(value)) == f"AnyContains({value!r})"
 
 
 @pytest.mark.parametrize(
@@ -43,4 +43,4 @@ def test_from_any_contains_eq(seq: Any, value: Any) -> None:
     ],
 )
 def test_from_any_contains_neq(seq: Any, value: Any) -> None:
-    assert_not_equal(any_contains(value), seq)
+    assert_not_equal(AnyContains(value), seq)

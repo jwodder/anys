@@ -6,10 +6,10 @@ from anys import (
     ANY_LIST,
     ANY_STR,
     AnyAnd,
+    AnyFunc,
+    AnyGT,
+    AnyLT,
     AnyOr,
-    any_func,
-    any_gt,
-    any_lt,
 )
 from test_lib import assert_equal, assert_not_equal
 
@@ -58,23 +58,23 @@ def test_or_or() -> None:
 
 @pytest.mark.parametrize("value", [24, 30, 32.5, 41])
 def test_any_gt_and_any_lt_eq(value: Union[int, float]) -> None:
-    assert_equal(any_gt(23) & any_lt(42), value)
+    assert_equal(AnyGT(23) & AnyLT(42), value)
 
 
 @pytest.mark.parametrize(
     "value", [22, 23, 42, 43, None, (), 3.14, 1 + 2j, 1.2 + 3.4j, [], {}, "foo", b"bar"]
 )
 def test_any_gt_and_any_lt_neq(value: Any) -> None:
-    assert_not_equal(any_gt(23) & any_lt(42), value)
+    assert_not_equal(AnyGT(23) & AnyLT(42), value)
 
 
 def test_any_gt_and_any_lt_repr() -> None:
-    assert repr(any_gt(23) & any_lt(42)) == "AnyAnd(AnyGT(23), AnyLT(42))"
+    assert repr(AnyGT(23) & AnyLT(42)) == "AnyAnd(AnyGT(23), AnyLT(42))"
 
 
 def test_and() -> None:
-    a1 = any_gt(23)
-    a2 = any_lt(42)
+    a1 = AnyGT(23)
+    a2 = AnyLT(42)
     a = a1 & a2
     assert isinstance(a, AnyAnd)
     assert len(a.args) == 2
@@ -83,8 +83,8 @@ def test_and() -> None:
 
 
 def test_and3() -> None:
-    a1 = any_gt(23)
-    a2 = any_lt(42)
+    a1 = AnyGT(23)
+    a2 = AnyLT(42)
     a = a1 & a2 & ANY_INT
     assert isinstance(a, AnyAnd)
     assert len(a.args) == 3
@@ -94,10 +94,10 @@ def test_and3() -> None:
 
 
 def test_and_and() -> None:
-    a1 = any_gt(23)
-    a2 = any_lt(42)
+    a1 = AnyGT(23)
+    a2 = AnyLT(42)
     a3 = ANY_INT
-    a4 = any_func(lambda n: n % 2 == 1)
+    a4 = AnyFunc(lambda n: n % 2 == 1)
     a = (a1 & a2) & (a3 & a4)
     assert isinstance(a, AnyAnd)
     assert len(a.args) == 4

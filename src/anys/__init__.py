@@ -46,7 +46,7 @@ and the assertion will do what you mean.
 Visit <https://github.com/jwodder/anys> for more information.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0.dev1"
 __author__ = "John Thorvald Wodder II"
 __author_email__ = "anys@varonathe.org"
 __license__ = "MIT"
@@ -61,6 +61,7 @@ import re
 import sys
 import types
 from typing import (
+    TYPE_CHECKING,
     Any,
     AnyStr,
     Callable,
@@ -74,15 +75,7 @@ from typing import (
     TypeVar,
     Union,
 )
-
-T = TypeVar("T")
-
-if sys.version_info[:2] >= (3, 10):
-    ClassInfo = Union[
-        type, types.Union, Tuple[Union[type, types.Union, Tuple[Any, ...]], ...]
-    ]
-else:
-    ClassInfo = Union[type, Tuple[Union[type, Tuple[Any, ...]], ...]]
+from deprecated import deprecated
 
 __all__ = [
     "ANY_AWARE_DATETIME",
@@ -117,6 +110,22 @@ __all__ = [
     "ANY_TIME_STR",
     "ANY_TRUTHY",
     "ANY_TUPLE",
+    "AnyContains",
+    "AnyFullmatch",
+    "AnyFunc",
+    "AnyGE",
+    "AnyGT",
+    "AnyIn",
+    "AnyInstance",
+    "AnyLE",
+    "AnyLT",
+    "AnyMatch",
+    "AnySearch",
+    "AnySubstr",
+    "AnyWithAttrs",
+    "AnyWithEntries",
+    "Maybe",
+    "Not",
     "any_contains",
     "any_fullmatch",
     "any_func",
@@ -135,8 +144,22 @@ __all__ = [
     "not_",
 ]
 
+T = TypeVar("T")
 
-class AnyBase(ABC):
+if sys.version_info[:2] >= (3, 10):
+    ClassInfo = Union[
+        type, types.Union, Tuple[Union[type, types.Union, Tuple[Any, ...]], ...]
+    ]
+else:
+    ClassInfo = Union[type, Tuple[Union[type, Tuple[Any, ...]], ...]]
+
+if TYPE_CHECKING:
+    Base = Any
+else:
+    Base = object
+
+
+class AnyBase(ABC, Base):
     @abstractmethod
     def match(self, value: Any) -> bool:
         ...
@@ -185,16 +208,19 @@ class AnyArg(AnyBase, Generic[T]):
 
 
 class AnyFunc(AnyArg[Callable]):
+    """
+    A matcher that matches any value ``x`` for which ``func(x)`` is true.  If
+    ``func(x)`` raises a `TypeError` or `ValueError`, it will be suppressed,
+    and ``x == any_func(func)`` will evaluate to `False`.  All other exceptions
+    are propagated out.
+    """
+
     def match(self, value: Any) -> bool:
         return bool(self.arg(value))
 
 
-# Anys need to be constructed via functions that return typing.Any so that
-# comparing them against values with more restrictive types doesn't trigger a
-# "comparison-overlap" type error in mypy.
-
-
-def any_func(func: Callable) -> Any:
+@deprecated(version="0.2.0", reason="Use AnyFunc instead")
+def any_func(func: Callable) -> Any:  # pragma: no cover
     """
     Returns a matcher that matches any value ``x`` for which ``func(x)`` is
     true.  If ``func(x)`` raises a `TypeError` or `ValueError`, it will be
@@ -205,11 +231,20 @@ def any_func(func: Callable) -> Any:
 
 
 class AnyInstance(AnyArg[ClassInfo]):
+    """
+    A matcher that matches any value that is an instance of ``classinfo``.
+    ``classinfo`` can be either a type or a tuple of types (or, starting in
+    Python 3.10, a `Union` of types).
+    """
+
     def match(self, value: Any) -> bool:
         return isinstance(value, self.arg)
 
 
-def any_instance(classinfo: ClassInfo, *, name: Optional[str] = None) -> Any:
+@deprecated(version="0.2.0", reason="Use AnyInstance instead")
+def any_instance(
+    classinfo: ClassInfo, *, name: Optional[str] = None
+) -> Any:  # pragma: no cover
     """
     Returns a matcher that matches any value that is an instance of
     ``classinfo``.  ``classinfo`` can be either a type or a tuple of types (or,
@@ -218,24 +253,24 @@ def any_instance(classinfo: ClassInfo, *, name: Optional[str] = None) -> Any:
     return AnyInstance(classinfo, name=name)
 
 
-ANY_BOOL = any_instance(bool, name="ANY_BOOL")
-ANY_BYTES = any_instance(bytes, name="ANY_BYTES")
-ANY_COMPLEX = any_instance(complex, name="ANY_COMPLEX")
-ANY_DATE = any_instance(date, name="ANY_DATE")
-ANY_DATETIME = any_instance(datetime, name="ANY_DATETIME")
-ANY_DICT = any_instance(dict, name="ANY_DICT")
-ANY_FLOAT = any_instance(float, name="ANY_FLOAT")
-ANY_INT = any_instance(int, name="ANY_INT")
-ANY_ITERABLE = any_instance(abc.Iterable, name="ANY_ITERABLE")
-ANY_ITERATOR = any_instance(abc.Iterator, name="ANY_ITERATOR")
-ANY_LIST = any_instance(list, name="ANY_LIST")
-ANY_MAPPING = any_instance(abc.Mapping, name="ANY_MAPPING")
-ANY_NUMBER = any_instance(Number, name="ANY_NUMBER")
-ANY_SEQUENCE = any_instance(abc.Sequence, name="ANY_SEQUENCE")
-ANY_SET = any_instance(set, name="ANY_SET")
-ANY_STR = any_instance(str, name="ANY_STR")
-ANY_TIME = any_instance(time, name="ANY_TIME")
-ANY_TUPLE = any_instance(tuple, name="ANY_TUPLE")
+ANY_BOOL = AnyInstance(bool, name="ANY_BOOL")
+ANY_BYTES = AnyInstance(bytes, name="ANY_BYTES")
+ANY_COMPLEX = AnyInstance(complex, name="ANY_COMPLEX")
+ANY_DATE = AnyInstance(date, name="ANY_DATE")
+ANY_DATETIME = AnyInstance(datetime, name="ANY_DATETIME")
+ANY_DICT = AnyInstance(dict, name="ANY_DICT")
+ANY_FLOAT = AnyInstance(float, name="ANY_FLOAT")
+ANY_INT = AnyInstance(int, name="ANY_INT")
+ANY_ITERABLE = AnyInstance(abc.Iterable, name="ANY_ITERABLE")
+ANY_ITERATOR = AnyInstance(abc.Iterator, name="ANY_ITERATOR")
+ANY_LIST = AnyInstance(list, name="ANY_LIST")
+ANY_MAPPING = AnyInstance(abc.Mapping, name="ANY_MAPPING")
+ANY_NUMBER = AnyInstance(Number, name="ANY_NUMBER")
+ANY_SEQUENCE = AnyInstance(abc.Sequence, name="ANY_SEQUENCE")
+ANY_SET = AnyInstance(set, name="ANY_SET")
+ANY_STR = AnyInstance(str, name="ANY_STR")
+ANY_TIME = AnyInstance(time, name="ANY_TIME")
+ANY_TUPLE = AnyInstance(tuple, name="ANY_TUPLE")
 
 
 class AnyStrictDate(AnyBase):
@@ -246,7 +281,7 @@ class AnyStrictDate(AnyBase):
         return "ANY_STRICT_DATE"
 
 
-ANY_STRICT_DATE: Any = AnyStrictDate()
+ANY_STRICT_DATE = AnyStrictDate()
 
 
 class AnyAwareDatetime(AnyBase):
@@ -257,7 +292,7 @@ class AnyAwareDatetime(AnyBase):
         return "ANY_AWARE_DATETIME"
 
 
-ANY_AWARE_DATETIME: Any = AnyAwareDatetime()
+ANY_AWARE_DATETIME = AnyAwareDatetime()
 
 
 class AnyNaiveDatetime(AnyBase):
@@ -268,7 +303,7 @@ class AnyNaiveDatetime(AnyBase):
         return "ANY_NAIVE_DATETIME"
 
 
-ANY_NAIVE_DATETIME: Any = AnyNaiveDatetime()
+ANY_NAIVE_DATETIME = AnyNaiveDatetime()
 
 
 class AnyAwareTime(AnyBase):
@@ -279,7 +314,7 @@ class AnyAwareTime(AnyBase):
         return "ANY_AWARE_TIME"
 
 
-ANY_AWARE_TIME: Any = AnyAwareTime()
+ANY_AWARE_TIME = AnyAwareTime()
 
 
 class AnyNaiveTime(AnyBase):
@@ -290,15 +325,21 @@ class AnyNaiveTime(AnyBase):
         return "ANY_NAIVE_TIME"
 
 
-ANY_NAIVE_TIME: Any = AnyNaiveTime()
+ANY_NAIVE_TIME = AnyNaiveTime()
 
 
 class Maybe(AnyArg[Any]):
+    """
+    A matcher that matches `None` and any value that equals or matches ``arg``
+    (which can be an `anys` matcher)
+    """
+
     def match(self, value: Any) -> bool:
         return bool(value is None or self.arg == value)
 
 
-def maybe(arg: Any) -> Any:
+@deprecated(version="0.2.0", reason="Use Maybe instead")
+def maybe(arg: Any) -> Any:  # pragma: no cover
     """
     Returns a matcher that matches `None` and any value that equals or matches
     ``arg`` (which can be an `anys` matcher)
@@ -307,11 +348,17 @@ def maybe(arg: Any) -> Any:
 
 
 class Not(AnyArg[Any]):
+    """
+    A matcher that matches anything that does not equal or match ``arg`` (which
+    can be an `anys` matcher)
+    """
+
     def match(self, value: Any) -> bool:
         return bool(self.arg != value)
 
 
-def not_(arg: Any) -> Any:
+@deprecated(version="0.2.0", reason="Use Not instead")
+def not_(arg: Any) -> Any:  # pragma: no cover
     """
     Returns a matcher that matches anything that does not equal or match
     ``arg`` (which can be an `anys` matcher)
@@ -320,11 +367,17 @@ def not_(arg: Any) -> Any:
 
 
 class AnyMatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
+    """
+    A matcher that matches any string ``s`` for which ``re.match(pattern, s)``
+    succeeds
+    """
+
     def match(self, value: Any) -> bool:
         return bool(re.match(self.arg, value))
 
 
-def any_match(patten: Union[AnyStr, Pattern[AnyStr]]) -> Any:
+@deprecated(version="0.2.0", reason="Use AnyMatch instead")
+def any_match(patten: Union[AnyStr, Pattern[AnyStr]]) -> Any:  # pragma: no cover
     """
     Returns a matcher that matches any string ``s`` for which
     ``re.match(pattern, s)`` succeeds
@@ -333,11 +386,17 @@ def any_match(patten: Union[AnyStr, Pattern[AnyStr]]) -> Any:
 
 
 class AnySearch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
+    """
+    A matcher that matches any string ``s`` for which ``re.search(pattern, s)``
+    succeeds
+    """
+
     def match(self, value: Any) -> bool:
         return bool(re.search(self.arg, value))
 
 
-def any_search(pattern: Union[AnyStr, Pattern[AnyStr]]) -> Any:
+@deprecated(version="0.2.0", reason="Use AnySearch instead")
+def any_search(pattern: Union[AnyStr, Pattern[AnyStr]]) -> Any:  # pragma: no cover
     """
     Returns a matcher that matches any string ``s`` for which
     ``re.search(pattern, s)`` succeeds
@@ -346,13 +405,19 @@ def any_search(pattern: Union[AnyStr, Pattern[AnyStr]]) -> Any:
 
 
 class AnyFullmatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
+    """
+    A matcher that matches any string ``s`` for which ``re.fullmatch(pattern,
+    s)`` succeeds
+    """
+
     def match(self, value: Any) -> bool:
         return bool(re.fullmatch(self.arg, value))
 
 
+@deprecated(version="0.2.0", reason="Use AnyFullmatch instead")
 def any_fullmatch(
     pattern: Union[AnyStr, Pattern[AnyStr]], *, name: Optional[str] = None
-) -> Any:
+) -> Any:  # pragma: no cover
     """
     Returns a matcher that matches any string ``s`` for which
     ``re.fullmatch(pattern, s)`` succeeds
@@ -361,6 +426,13 @@ def any_fullmatch(
 
 
 class AnyIn(AnyArg[Iterable[T]]):
+    """
+    A matcher that matches any value that equals or matches an element of
+    ``iterable`` (which may contain `anys` matchers).  Note that, if
+    ``iterable`` is a string, only individual characters in the string will
+    match; to match substrings, use `any_substr()` instead.
+    """
+
     def __init__(self, arg: Iterable[T], *, name: Optional[str] = None) -> None:
         self.arg: List[T] = list(arg)
         self.name = name
@@ -369,7 +441,8 @@ class AnyIn(AnyArg[Iterable[T]]):
         return bool(any(a == value for a in self.arg))
 
 
-def any_in(iterable: Iterable) -> Any:
+@deprecated(version="0.2.0", reason="Use AnyIn instead")
+def any_in(iterable: Iterable) -> Any:  # pragma: no cover
     """
     Returns a matcher that matches any value that equals or matches an element
     of ``iterable`` (which may contain `anys` matchers).  Note that, if
@@ -380,16 +453,26 @@ def any_in(iterable: Iterable) -> Any:
 
 
 class AnySubstr(AnyArg[AnyStr]):
+    """A matcher that matches any substring of ``s``"""
+
     def match(self, value: Any) -> bool:
         return bool(value in self.arg)
 
 
-def any_substr(s: AnyStr) -> Any:
+@deprecated(version="0.2.0", reason="Use AnySubstr instead")
+def any_substr(s: AnyStr) -> Any:  # pragma: no cover
     """Returns a matcher that matches any substring of ``s``"""
     return AnySubstr(s)
 
 
 class AnyContains(AnyArg[Any]):
+    """
+    A matcher that matches any value for which ``key in value`` is true.  If
+    ``key`` is an `anys` matcher, ``value == any_contains(key)`` will instead
+    be evaluated by iterating through the elements of ``value`` and checking
+    whether any match ``key``.
+    """
+
     def match(self, value: Any) -> bool:
         if isinstance(self.arg, AnyBase):
             return bool(any(self.arg == v for v in value))
@@ -397,7 +480,8 @@ class AnyContains(AnyArg[Any]):
             return bool(self.arg in value)
 
 
-def any_contains(key: Any) -> Any:
+@deprecated(version="0.2.0", reason="Use AnyContains instead")
+def any_contains(key: Any) -> Any:  # pragma: no cover
     """
     Returns a matcher that matches any value for which ``key in value`` is
     true.  If ``key`` is an `anys` matcher, ``value == any_contains(key)``
@@ -408,6 +492,13 @@ def any_contains(key: Any) -> Any:
 
 
 class AnyWithEntries(AnyArg[Mapping]):
+    """
+    A matcher that matches any object ``obj`` such that ``obj[k] == v`` for all
+    ``k,v`` in ``mapping.items()``.
+
+    The values (but not the keys) of ``mapping`` can be `anys` matchers.
+    """
+
     def match(self, value: Any) -> bool:
         for k, v in self.arg.items():
             try:
@@ -418,7 +509,8 @@ class AnyWithEntries(AnyArg[Mapping]):
         return True
 
 
-def any_with_entries(mapping: Mapping) -> Any:
+@deprecated(version="0.2.0", reason="Use AnyWithEntries instead")
+def any_with_entries(mapping: Mapping) -> Any:  # pragma: no cover
     """
     Returns a matcher that matches any object ``obj`` such that ``obj[k] == v``
     for all ``k,v`` in ``mapping.items()``.
@@ -429,6 +521,13 @@ def any_with_entries(mapping: Mapping) -> Any:
 
 
 class AnyWithAttrs(AnyArg[Mapping]):
+    """
+    A matcher that matches any object ``obj`` such that ``getattr(obj,
+    k) == v`` for all ``k,v`` in ``mapping.items()``.
+
+    The values (but not the keys) of ``mapping`` can be `anys` matchers.
+    """
+
     def match(self, value: Any) -> bool:
         for k, v in self.arg.items():
             try:
@@ -439,7 +538,8 @@ class AnyWithAttrs(AnyArg[Mapping]):
         return True
 
 
-def any_with_attrs(mapping: Mapping) -> Any:
+@deprecated(version="0.2.0", reason="Use AnyWithAttrs instead")
+def any_with_attrs(mapping: Mapping) -> Any:  # pragma: no cover
     """
     Returns a matcher that matches any object ``obj`` such that ``getattr(obj,
     k) == v`` for all ``k,v`` in ``mapping.items()``.
@@ -450,21 +550,27 @@ def any_with_attrs(mapping: Mapping) -> Any:
 
 
 class AnyLT(AnyArg[Any]):
+    """A matcher that matches any value less than ``bound``"""
+
     def match(self, value: Any) -> bool:
         return bool(value < self.arg)
 
 
-def any_lt(bound: Any) -> Any:
+@deprecated(version="0.2.0", reason="Use AnyLT instead")
+def any_lt(bound: Any) -> Any:  # pragma: no cover
     """Returns a matcher that matches any value less than ``bound``"""
     return AnyLT(bound)
 
 
 class AnyLE(AnyArg[Any]):
+    """A matcher that matches any value less than or equal to ``bound``"""
+
     def match(self, value: Any) -> bool:
         return bool(value <= self.arg)
 
 
-def any_le(bound: Any) -> Any:
+@deprecated(version="0.2.0", reason="Use AnyLE instead")
+def any_le(bound: Any) -> Any:  # pragma: no cover
     """
     Returns a matcher that matches any value less than or equal to ``bound``
     """
@@ -472,21 +578,27 @@ def any_le(bound: Any) -> Any:
 
 
 class AnyGT(AnyArg[Any]):
+    """A matcher that matches any value greater than ``bound``"""
+
     def match(self, value: Any) -> bool:
         return bool(value > self.arg)
 
 
-def any_gt(bound: Any) -> Any:
+@deprecated(version="0.2.0", reason="Use AnyGT instead")
+def any_gt(bound: Any) -> Any:  # pragma: no cover
     """Returns a matcher that matches any value greater than ``bound``"""
     return AnyGT(bound)
 
 
 class AnyGE(AnyArg[Any]):
+    """A matcher that matches any value greater than or equal to ``bound``"""
+
     def match(self, value: Any) -> bool:
         return bool(value >= self.arg)
 
 
-def any_ge(bound: Any) -> Any:
+@deprecated(version="0.2.0", reason="Use AnyGE instead")
+def any_ge(bound: Any) -> Any:  # pragma: no cover
     """
     Returns a matcher that matches any value greater than or equal to ``bound``
     """
@@ -501,25 +613,23 @@ DATE_RGX = r"[0-9]{4,}-(?:0[1-9]|1[012])-(?:0[1-9]|[12][0-9]|3[01])"
 TIME_RGX = r"(?:[01][0-9]|2[0-3]):[0-5][0-9](?::[0-5][0-9](?:\.[0-9]+)?)?"
 TZ_RGX = r"(?:Z|[-+][0-9]{2}(?::?[0-9]{2})?)"
 
-ANY_DATETIME_STR = any_fullmatch(
+ANY_DATETIME_STR = AnyFullmatch(
     re.compile(f"{DATE_RGX}[T ]{TIME_RGX}(?:{TZ_RGX})?"), name="ANY_DATETIME_STR"
 )
-ANY_AWARE_DATETIME_STR = any_fullmatch(
+ANY_AWARE_DATETIME_STR = AnyFullmatch(
     re.compile(f"{DATE_RGX}[T ]{TIME_RGX}{TZ_RGX}"), name="ANY_AWARE_DATETIME_STR"
 )
-ANY_NAIVE_DATETIME_STR = any_fullmatch(
+ANY_NAIVE_DATETIME_STR = AnyFullmatch(
     re.compile(f"{DATE_RGX}[T ]{TIME_RGX}"), name="ANY_NAIVE_DATETIME_STR"
 )
 
-ANY_DATE_STR = any_fullmatch(re.compile(DATE_RGX), name="ANY_DATE_STR")
+ANY_DATE_STR = AnyFullmatch(re.compile(DATE_RGX), name="ANY_DATE_STR")
 
-ANY_TIME_STR = any_fullmatch(
-    re.compile(f"{TIME_RGX}(?:{TZ_RGX})?"), name="ANY_TIME_STR"
-)
-ANY_AWARE_TIME_STR = any_fullmatch(
+ANY_TIME_STR = AnyFullmatch(re.compile(f"{TIME_RGX}(?:{TZ_RGX})?"), name="ANY_TIME_STR")
+ANY_AWARE_TIME_STR = AnyFullmatch(
     re.compile(f"{TIME_RGX}{TZ_RGX}"), name="ANY_AWARE_TIME_STR"
 )
-ANY_NAIVE_TIME_STR = any_fullmatch(re.compile(TIME_RGX), name="ANY_NAIVE_TIME_STR")
+ANY_NAIVE_TIME_STR = AnyFullmatch(re.compile(TIME_RGX), name="ANY_NAIVE_TIME_STR")
 
 
 class AnyArgs(AnyBase):

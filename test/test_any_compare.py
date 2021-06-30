@@ -1,6 +1,6 @@
 from typing import Any
 import pytest
-from anys import ANY_INT, any_ge, any_gt, any_le, any_lt
+from anys import ANY_INT, AnyGE, AnyGT, AnyLE, AnyLT
 from test_lib import assert_equal, assert_not_equal
 
 
@@ -16,8 +16,8 @@ from test_lib import assert_equal, assert_not_equal
     ],
 )
 def test_any_ge_eq(arg: Any, value: Any) -> None:
-    assert_equal(any_ge(arg), value)
-    assert repr(any_ge(arg)) == f"AnyGE({arg!r})"
+    assert_equal(AnyGE(arg), value)
+    assert repr(AnyGE(arg)) == f"AnyGE({arg!r})"
 
 
 @pytest.mark.parametrize(
@@ -33,7 +33,7 @@ def test_any_ge_eq(arg: Any, value: Any) -> None:
     ],
 )
 def test_any_ge_neq(arg: Any, value: Any) -> None:
-    assert_not_equal(any_ge(arg), value)
+    assert_not_equal(AnyGE(arg), value)
 
 
 @pytest.mark.parametrize(
@@ -45,8 +45,8 @@ def test_any_ge_neq(arg: Any, value: Any) -> None:
     ],
 )
 def test_any_gt_eq(arg: Any, value: Any) -> None:
-    assert_equal(any_gt(arg), value)
-    assert repr(any_gt(arg)) == f"AnyGT({arg!r})"
+    assert_equal(AnyGT(arg), value)
+    assert repr(AnyGT(arg)) == f"AnyGT({arg!r})"
 
 
 @pytest.mark.parametrize(
@@ -65,7 +65,7 @@ def test_any_gt_eq(arg: Any, value: Any) -> None:
     ],
 )
 def test_any_gt_neq(arg: Any, value: Any) -> None:
-    assert_not_equal(any_gt(arg), value)
+    assert_not_equal(AnyGT(arg), value)
 
 
 @pytest.mark.parametrize(
@@ -80,8 +80,8 @@ def test_any_gt_neq(arg: Any, value: Any) -> None:
     ],
 )
 def test_any_le_eq(arg: Any, value: Any) -> None:
-    assert_equal(any_le(arg), value)
-    assert repr(any_le(arg)) == f"AnyLE({arg!r})"
+    assert_equal(AnyLE(arg), value)
+    assert repr(AnyLE(arg)) == f"AnyLE({arg!r})"
 
 
 @pytest.mark.parametrize(
@@ -97,7 +97,7 @@ def test_any_le_eq(arg: Any, value: Any) -> None:
     ],
 )
 def test_any_le_neq(arg: Any, value: Any) -> None:
-    assert_not_equal(any_le(arg), value)
+    assert_not_equal(AnyLE(arg), value)
 
 
 @pytest.mark.parametrize(
@@ -109,8 +109,8 @@ def test_any_le_neq(arg: Any, value: Any) -> None:
     ],
 )
 def test_any_lt_eq(arg: Any, value: Any) -> None:
-    assert_equal(any_lt(arg), value)
-    assert repr(any_lt(arg)) == f"AnyLT({arg!r})"
+    assert_equal(AnyLT(arg), value)
+    assert repr(AnyLT(arg)) == f"AnyLT({arg!r})"
 
 
 @pytest.mark.parametrize(
@@ -129,4 +129,4 @@ def test_any_lt_eq(arg: Any, value: Any) -> None:
     ],
 )
 def test_any_lt_neq(arg: Any, value: Any) -> None:
-    assert_not_equal(any_lt(arg), value)
+    assert_not_equal(AnyLT(arg), value)

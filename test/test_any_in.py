@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 from typing import Any
 import pytest
-from anys import ANY_INT, ANY_STR, any_in
+from anys import ANY_INT, ANY_STR, AnyIn
 from test_lib import assert_equal, assert_not_equal
 
 
@@ -23,8 +23,8 @@ from test_lib import assert_equal, assert_not_equal
     ],
 )
 def test_from_any_in_eq(seq: Iterable, value: Any) -> None:
-    assert_equal(any_in(seq), value)
-    assert repr(any_in(seq)) == f"AnyIn({list(seq)})"
+    assert_equal(AnyIn(seq), value)
+    assert repr(AnyIn(seq)) == f"AnyIn({list(seq)})"
 
 
 @pytest.mark.parametrize(
@@ -41,4 +41,4 @@ def test_from_any_in_eq(seq: Iterable, value: Any) -> None:
     ],
 )
 def test_from_any_in_neq(seq: Iterable, value: Any) -> None:
-    assert_not_equal(any_in(seq), value)
+    assert_not_equal(AnyIn(seq), value)

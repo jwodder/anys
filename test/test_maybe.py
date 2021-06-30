@@ -1,6 +1,6 @@
 from typing import Any
 import pytest
-from anys import ANY_INT, ANY_STR, any_func, any_instance, maybe
+from anys import ANY_INT, ANY_STR, AnyFunc, AnyInstance, Maybe
 from test_lib import assert_equal, assert_not_equal
 
 
@@ -9,18 +9,18 @@ from test_lib import assert_equal, assert_not_equal
     [
         (ANY_STR, "foo"),
         (ANY_INT, 42),
-        (any_func(callable), callable),
-        (any_instance((str, list)), "foo"),
-        (any_instance((str, list)), [1, 2, 3]),
+        (AnyFunc(callable), callable),
+        (AnyInstance((str, list)), "foo"),
+        (AnyInstance((str, list)), [1, 2, 3]),
         (42, 42),
         ("foo", "foo"),
         (None, None),
     ],
 )
 def test_maybe_eq(a: Any, value: Any) -> None:
-    assert_equal(maybe(a), value)
-    assert_equal(maybe(a), None)
-    assert repr(maybe(a)) == f"Maybe({a!r})"
+    assert_equal(Maybe(a), value)
+    assert_equal(Maybe(a), None)
+    assert repr(Maybe(a)) == f"Maybe({a!r})"
 
 
 @pytest.mark.parametrize(
@@ -28,12 +28,12 @@ def test_maybe_eq(a: Any, value: Any) -> None:
     [
         (ANY_STR, 42),
         (ANY_INT, "foo"),
-        (any_func(callable), "foo"),
-        (any_instance((str, list)), 42),
+        (AnyFunc(callable), "foo"),
+        (AnyInstance((str, list)), 42),
         (42, 23),
         ("foo", "bar"),
         (None, 42),
     ],
 )
 def test_maybe_neq(a: Any, value: Any) -> None:
-    assert_not_equal(maybe(a), value)
+    assert_not_equal(Maybe(a), value)

@@ -1,6 +1,6 @@
 from typing import Any, AnyStr, Union
 import pytest
-from anys import any_substr
+from anys import AnySubstr
 from test_lib import assert_equal, assert_not_equal
 
 
@@ -17,8 +17,8 @@ from test_lib import assert_equal, assert_not_equal
     ],
 )
 def test_any_substr_eq(s: AnyStr, sub: Union[AnyStr, int]) -> None:
-    assert_equal(any_substr(s), sub)
-    assert repr(any_substr(s)) == f"AnySubstr({s!r})"
+    assert_equal(AnySubstr(s), sub)
+    assert repr(AnySubstr(s)) == f"AnySubstr({s!r})"
 
 
 @pytest.mark.parametrize(
@@ -32,5 +32,5 @@ def test_any_substr_eq(s: AnyStr, sub: Union[AnyStr, int]) -> None:
     ],
 )
 def test_any_substr_neq(s: AnyStr, sub: Any) -> None:
-    assert_not_equal(any_substr(s), sub)
-    assert repr(any_substr(s)) == f"AnySubstr({s!r})"
+    assert_not_equal(AnySubstr(s), sub)
+    assert repr(AnySubstr(s)) == f"AnySubstr({s!r})"

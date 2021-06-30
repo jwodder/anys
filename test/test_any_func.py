@@ -2,7 +2,7 @@ from functools import partial
 from operator import lt
 from typing import Any, Callable
 import pytest
-from anys import any_func
+from anys import AnyFunc
 from test_lib import assert_equal, assert_not_equal
 
 
@@ -18,8 +18,8 @@ from test_lib import assert_equal, assert_not_equal
     ],
 )
 def test_any_func_eq(func: Callable, value: Any) -> None:
-    assert_equal(any_func(func), value)
-    assert repr(any_func(func)) == f"AnyFunc({func!r})"
+    assert_equal(AnyFunc(func), value)
+    assert repr(AnyFunc(func)) == f"AnyFunc({func!r})"
 
 
 @pytest.mark.parametrize(
@@ -37,5 +37,5 @@ def test_any_func_eq(func: Callable, value: Any) -> None:
     ],
 )
 def test_any_func_neq(func: Callable, value: Any) -> None:
-    assert_not_equal(any_func(func), value)
-    assert repr(any_func(func)) == f"AnyFunc({func!r})"
+    assert_not_equal(AnyFunc(func), value)
+    assert repr(AnyFunc(func)) == f"AnyFunc({func!r})"

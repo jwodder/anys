@@ -2,7 +2,7 @@ from collections.abc import Mapping
 from types import SimpleNamespace
 from typing import Any
 import pytest
-from anys import ANY_INT, ANY_STR, any_with_attrs
+from anys import ANY_INT, ANY_STR, AnyWithAttrs
 from test_lib import assert_equal, assert_not_equal
 
 
@@ -21,8 +21,8 @@ from test_lib import assert_equal, assert_not_equal
     ],
 )
 def test_any_with_attrs_eq(arg: Mapping, value: Any) -> None:
-    assert_equal(any_with_attrs(arg), value)
-    assert repr(any_with_attrs(arg)) == f"AnyWithAttrs({arg!r})"
+    assert_equal(AnyWithAttrs(arg), value)
+    assert repr(AnyWithAttrs(arg)) == f"AnyWithAttrs({arg!r})"
 
 
 @pytest.mark.parametrize(
@@ -38,4 +38,4 @@ def test_any_with_attrs_eq(arg: Mapping, value: Any) -> None:
     ],
 )
 def test_any_with_attrs_neq(arg: Mapping, value: Any) -> None:
-    assert_not_equal(any_with_attrs(arg), value)
+    assert_not_equal(AnyWithAttrs(arg), value)
