@@ -148,7 +148,7 @@ T = TypeVar("T")
 
 if sys.version_info[:2] >= (3, 10):
     ClassInfo = Union[
-        type, types.Union, Tuple[Union[type, types.Union, Tuple[Any, ...]], ...]
+        type, types.UnionType, Tuple[Union[type, types.UnionType, Tuple[Any, ...]], ...]
     ]
 else:
     ClassInfo = Union[type, Tuple[Union[type, Tuple[Any, ...]], ...]]
