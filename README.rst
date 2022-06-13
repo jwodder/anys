@@ -13,6 +13,10 @@
 .. image:: https://img.shields.io/pypi/pyversions/anys.svg
     :target: https://pypi.org/project/anys/
 
+.. image:: https://img.shields.io/conda/vn/conda-forge/anys.svg
+    :target: https://anaconda.org/conda-forge/anys
+    :alt: Conda Version
+
 .. image:: https://img.shields.io/github/license/jwodder/anys.svg
     :target: https://opensource.org/licenses/MIT
     :alt: MIT License
