@@ -377,12 +377,12 @@ class AnyMatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
 
 
 @deprecated(version="0.2.0", reason="Use AnyMatch instead")
-def any_match(patten: Union[AnyStr, Pattern[AnyStr]]) -> Any:  # pragma: no cover
+def any_match(pattern: Union[AnyStr, Pattern[AnyStr]]) -> Any:  # pragma: no cover
     """
     Returns a matcher that matches any string ``s`` for which
     ``re.match(pattern, s)`` succeeds
     """
-    return AnyMatch(patten)
+    return AnyMatch(pattern)
 
 
 class AnySearch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
