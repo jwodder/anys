@@ -1,4 +1,5 @@
-from typing import Any, Union
+from __future__ import annotations
+from typing import Any
 import pytest
 from anys import (
     ANY_FLOAT,
@@ -15,7 +16,7 @@ from test_lib import assert_equal, assert_not_equal
 
 
 @pytest.mark.parametrize("value", [-23, 0, 42, True, False, "", "foo"])
-def test_any_int_or_str_eq(value: Union[int, str]) -> None:
+def test_any_int_or_str_eq(value: int | str) -> None:
     assert_equal(ANY_INT | ANY_STR, value)
 
 
@@ -57,7 +58,7 @@ def test_or_or() -> None:
 
 
 @pytest.mark.parametrize("value", [24, 30, 32.5, 41])
-def test_any_gt_and_any_lt_eq(value: Union[int, float]) -> None:
+def test_any_gt_and_any_lt_eq(value: int | float) -> None:
     assert_equal(AnyGT(23) & AnyLT(42), value)
 
 

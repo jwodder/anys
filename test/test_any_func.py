@@ -1,6 +1,8 @@
+from __future__ import annotations
+from collections.abc import Callable
 from functools import partial
 from operator import lt
-from typing import Any, Callable
+from typing import Any
 import pytest
 from anys import AnyFunc
 from test_lib import assert_equal, assert_not_equal

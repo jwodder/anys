@@ -1,4 +1,5 @@
-from typing import Any, AnyStr, Union
+from __future__ import annotations
+from typing import Any, AnyStr
 import pytest
 from anys import AnySubstr
 from test_lib import assert_equal, assert_not_equal
@@ -16,7 +17,7 @@ from test_lib import assert_equal, assert_not_equal
         (b"abc", 97),
     ],
 )
-def test_any_substr_eq(s: AnyStr, sub: Union[AnyStr, int]) -> None:
+def test_any_substr_eq(s: AnyStr, sub: AnyStr | int) -> None:
     assert_equal(AnySubstr(s), sub)
     assert repr(AnySubstr(s)) == f"AnySubstr({s!r})"
 

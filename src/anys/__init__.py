@@ -46,6 +46,8 @@ and the assertion will do what you mean.
 Visit <https://github.com/jwodder/anys> for more information.
 """
 
+from __future__ import annotations
+
 __version__ = "0.3.0.dev1"
 __author__ = "John Thorvald Wodder II"
 __author_email__ = "anys@varonathe.org"
@@ -53,28 +55,14 @@ __license__ = "MIT"
 __url__ = "https://github.com/jwodder/anys"
 
 from abc import ABC, abstractmethod
-from collections import abc
+from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from datetime import date, datetime, time
 from numbers import Number
 import operator
 import re
 import sys
 import types
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    AnyStr,
-    Callable,
-    Generic,
-    Iterable,
-    List,
-    Mapping,
-    Optional,
-    Pattern,
-    Tuple,
-    TypeVar,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, AnyStr, Generic, Optional, Tuple, TypeVar, Union
 from deprecated import deprecated
 
 __all__ = [
@@ -147,9 +135,9 @@ __all__ = [
 T = TypeVar("T")
 
 if sys.version_info[:2] >= (3, 10):
-    ClassInfo = Union[
-        type, types.UnionType, Tuple[Union[type, types.UnionType, Tuple[Any, ...]], ...]
-    ]
+    ClassInfo = (
+        type | types.UnionType | tuple[type | types.UnionType | tuple[Any, ...], ...]
+    )
 else:
     ClassInfo = Union[type, Tuple[Union[type, Tuple[Any, ...]], ...]]
 
@@ -172,7 +160,7 @@ class AnyBase(ABC, Base):
 
     def __and__(self, other: Any) -> Any:
         if isinstance(other, AnyBase):
-            parts: List[AnyBase] = []
+            parts: list[AnyBase] = []
             for s in [self, other]:
                 if isinstance(s, AnyAnd):
                     parts.extend(s.args)
@@ -184,7 +172,7 @@ class AnyBase(ABC, Base):
 
     def __or__(self, other: Any) -> Any:
         if isinstance(other, AnyBase):
-            parts: List[AnyBase] = []
+            parts: list[AnyBase] = []
             for s in [self, other]:
                 if isinstance(s, AnyOr):
                     parts.extend(s.args)
@@ -261,12 +249,12 @@ ANY_DATETIME = AnyInstance(datetime, name="ANY_DATETIME")
 ANY_DICT = AnyInstance(dict, name="ANY_DICT")
 ANY_FLOAT = AnyInstance(float, name="ANY_FLOAT")
 ANY_INT = AnyInstance(int, name="ANY_INT")
-ANY_ITERABLE = AnyInstance(abc.Iterable, name="ANY_ITERABLE")
-ANY_ITERATOR = AnyInstance(abc.Iterator, name="ANY_ITERATOR")
+ANY_ITERABLE = AnyInstance(Iterable, name="ANY_ITERABLE")
+ANY_ITERATOR = AnyInstance(Iterator, name="ANY_ITERATOR")
 ANY_LIST = AnyInstance(list, name="ANY_LIST")
-ANY_MAPPING = AnyInstance(abc.Mapping, name="ANY_MAPPING")
+ANY_MAPPING = AnyInstance(Mapping, name="ANY_MAPPING")
 ANY_NUMBER = AnyInstance(Number, name="ANY_NUMBER")
-ANY_SEQUENCE = AnyInstance(abc.Sequence, name="ANY_SEQUENCE")
+ANY_SEQUENCE = AnyInstance(Sequence, name="ANY_SEQUENCE")
 ANY_SET = AnyInstance(set, name="ANY_SET")
 ANY_STR = AnyInstance(str, name="ANY_STR")
 ANY_TIME = AnyInstance(time, name="ANY_TIME")
@@ -366,7 +354,7 @@ def not_(arg: Any) -> Any:  # pragma: no cover
     return Not(arg)
 
 
-class AnyMatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
+class AnyMatch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
     """
     A matcher that matches any string ``s`` for which ``re.match(pattern, s)``
     succeeds
@@ -377,7 +365,7 @@ class AnyMatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
 
 
 @deprecated(version="0.2.0", reason="Use AnyMatch instead")
-def any_match(pattern: Union[AnyStr, Pattern[AnyStr]]) -> Any:  # pragma: no cover
+def any_match(pattern: AnyStr | re.Pattern[AnyStr]) -> Any:  # pragma: no cover
     """
     Returns a matcher that matches any string ``s`` for which
     ``re.match(pattern, s)`` succeeds
@@ -385,7 +373,7 @@ def any_match(pattern: Union[AnyStr, Pattern[AnyStr]]) -> Any:  # pragma: no cov
     return AnyMatch(pattern)
 
 
-class AnySearch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
+class AnySearch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
     """
     A matcher that matches any string ``s`` for which ``re.search(pattern, s)``
     succeeds
@@ -396,7 +384,7 @@ class AnySearch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
 
 
 @deprecated(version="0.2.0", reason="Use AnySearch instead")
-def any_search(pattern: Union[AnyStr, Pattern[AnyStr]]) -> Any:  # pragma: no cover
+def any_search(pattern: AnyStr | re.Pattern[AnyStr]) -> Any:  # pragma: no cover
     """
     Returns a matcher that matches any string ``s`` for which
     ``re.search(pattern, s)`` succeeds
@@ -404,7 +392,7 @@ def any_search(pattern: Union[AnyStr, Pattern[AnyStr]]) -> Any:  # pragma: no co
     return AnySearch(pattern)
 
 
-class AnyFullmatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
+class AnyFullmatch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
     """
     A matcher that matches any string ``s`` for which ``re.fullmatch(pattern,
     s)`` succeeds
@@ -416,7 +404,7 @@ class AnyFullmatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
 
 @deprecated(version="0.2.0", reason="Use AnyFullmatch instead")
 def any_fullmatch(
-    pattern: Union[AnyStr, Pattern[AnyStr]], *, name: Optional[str] = None
+    pattern: AnyStr | re.Pattern[AnyStr], *, name: Optional[str] = None
 ) -> Any:  # pragma: no cover
     """
     Returns a matcher that matches any string ``s`` for which
@@ -434,7 +422,7 @@ class AnyIn(AnyArg[Iterable[T]]):
     """
 
     def __init__(self, arg: Iterable[T], *, name: Optional[str] = None) -> None:
-        self.arg: List[T] = list(arg)
+        self.arg: list[T] = list(arg)
         self.name = name
 
     def match(self, value: Any) -> bool:
@@ -634,7 +622,7 @@ ANY_NAIVE_TIME_STR = AnyFullmatch(re.compile(TIME_RGX), name="ANY_NAIVE_TIME_STR
 
 class AnyArgs(AnyBase):
     def __init__(self, *args: AnyBase, name: Optional[str] = None) -> None:
-        self.args: List[AnyBase] = list(args)
+        self.args: list[AnyBase] = list(args)
         self.name = name
 
     def __repr__(self) -> str:
