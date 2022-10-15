@@ -62,7 +62,18 @@ import operator
 import re
 import sys
 import types
-from typing import TYPE_CHECKING, Any, AnyStr, Generic, Optional, Tuple, TypeVar, Union
+import typing as ty
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    AnyStr,
+    Generic,
+    Optional,
+    Pattern,
+    Tuple,
+    TypeVar,
+    Union,
+)
 from deprecated import deprecated
 
 __all__ = [
@@ -354,7 +365,7 @@ def not_(arg: Any) -> Any:  # pragma: no cover
     return Not(arg)
 
 
-class AnyMatch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
+class AnyMatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
     """
     A matcher that matches any string ``s`` for which ``re.match(pattern, s)``
     succeeds
@@ -373,7 +384,7 @@ def any_match(pattern: AnyStr | re.Pattern[AnyStr]) -> Any:  # pragma: no cover
     return AnyMatch(pattern)
 
 
-class AnySearch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
+class AnySearch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
     """
     A matcher that matches any string ``s`` for which ``re.search(pattern, s)``
     succeeds
@@ -392,7 +403,7 @@ def any_search(pattern: AnyStr | re.Pattern[AnyStr]) -> Any:  # pragma: no cover
     return AnySearch(pattern)
 
 
-class AnyFullmatch(AnyArg[Union[AnyStr, re.Pattern[AnyStr]]]):
+class AnyFullmatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
     """
     A matcher that matches any string ``s`` for which ``re.fullmatch(pattern,
     s)`` succeeds
@@ -413,7 +424,7 @@ def any_fullmatch(
     return AnyFullmatch(pattern, name=name)
 
 
-class AnyIn(AnyArg[Iterable[T]]):
+class AnyIn(AnyArg[ty.Iterable[T]]):
     """
     A matcher that matches any value that equals or matches an element of
     ``iterable`` (which may contain `anys` matchers).  Note that, if
@@ -479,7 +490,7 @@ def any_contains(key: Any) -> Any:  # pragma: no cover
     return AnyContains(key)
 
 
-class AnyWithEntries(AnyArg[Mapping]):
+class AnyWithEntries(AnyArg[ty.Mapping]):
     """
     A matcher that matches any object ``obj`` such that ``obj[k] == v`` for all
     ``k,v`` in ``mapping.items()``.
@@ -508,7 +519,7 @@ def any_with_entries(mapping: Mapping) -> Any:  # pragma: no cover
     return AnyWithEntries(mapping)
 
 
-class AnyWithAttrs(AnyArg[Mapping]):
+class AnyWithAttrs(AnyArg[ty.Mapping]):
     """
     A matcher that matches any object ``obj`` such that ``getattr(obj,
     k) == v`` for all ``k,v`` in ``mapping.items()``.
