@@ -74,7 +74,6 @@ from typing import (
     TypeVar,
     Union,
 )
-from deprecated import deprecated
 
 __all__ = [
     "ANY_AWARE_DATETIME",
@@ -218,17 +217,6 @@ class AnyFunc(AnyArg[Callable]):
         return bool(self.arg(value))
 
 
-@deprecated(version="0.2.0", reason="Use AnyFunc instead")
-def any_func(func: Callable) -> Any:  # pragma: no cover
-    """
-    Returns a matcher that matches any value ``x`` for which ``func(x)`` is
-    true.  If ``func(x)`` raises a `TypeError` or `ValueError`, it will be
-    suppressed, and ``x == any_func(func)`` will evaluate to `False`.  All
-    other exceptions are propagated out.
-    """
-    return AnyFunc(func)
-
-
 class AnyInstance(AnyArg[ClassInfo]):
     """
     A matcher that matches any value that is an instance of ``classinfo``.
@@ -238,18 +226,6 @@ class AnyInstance(AnyArg[ClassInfo]):
 
     def match(self, value: Any) -> bool:
         return isinstance(value, self.arg)
-
-
-@deprecated(version="0.2.0", reason="Use AnyInstance instead")
-def any_instance(
-    classinfo: ClassInfo, *, name: Optional[str] = None
-) -> Any:  # pragma: no cover
-    """
-    Returns a matcher that matches any value that is an instance of
-    ``classinfo``.  ``classinfo`` can be either a type or a tuple of types (or,
-    starting in Python 3.10, a `Union` of types).
-    """
-    return AnyInstance(classinfo, name=name)
 
 
 ANY_BOOL = AnyInstance(bool, name="ANY_BOOL")
@@ -337,15 +313,6 @@ class Maybe(AnyArg[Any]):
         return bool(value is None or self.arg == value)
 
 
-@deprecated(version="0.2.0", reason="Use Maybe instead")
-def maybe(arg: Any) -> Any:  # pragma: no cover
-    """
-    Returns a matcher that matches `None` and any value that equals or matches
-    ``arg`` (which can be an `anys` matcher)
-    """
-    return Maybe(arg)
-
-
 class Not(AnyArg[Any]):
     """
     A matcher that matches anything that does not equal or match ``arg`` (which
@@ -354,15 +321,6 @@ class Not(AnyArg[Any]):
 
     def match(self, value: Any) -> bool:
         return bool(self.arg != value)
-
-
-@deprecated(version="0.2.0", reason="Use Not instead")
-def not_(arg: Any) -> Any:  # pragma: no cover
-    """
-    Returns a matcher that matches anything that does not equal or match
-    ``arg`` (which can be an `anys` matcher)
-    """
-    return Not(arg)
 
 
 class AnyMatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
@@ -375,15 +333,6 @@ class AnyMatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
         return bool(re.match(self.arg, value))
 
 
-@deprecated(version="0.2.0", reason="Use AnyMatch instead")
-def any_match(pattern: AnyStr | re.Pattern[AnyStr]) -> Any:  # pragma: no cover
-    """
-    Returns a matcher that matches any string ``s`` for which
-    ``re.match(pattern, s)`` succeeds
-    """
-    return AnyMatch(pattern)
-
-
 class AnySearch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
     """
     A matcher that matches any string ``s`` for which ``re.search(pattern, s)``
@@ -394,15 +343,6 @@ class AnySearch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
         return bool(re.search(self.arg, value))
 
 
-@deprecated(version="0.2.0", reason="Use AnySearch instead")
-def any_search(pattern: AnyStr | re.Pattern[AnyStr]) -> Any:  # pragma: no cover
-    """
-    Returns a matcher that matches any string ``s`` for which
-    ``re.search(pattern, s)`` succeeds
-    """
-    return AnySearch(pattern)
-
-
 class AnyFullmatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
     """
     A matcher that matches any string ``s`` for which ``re.fullmatch(pattern,
@@ -411,17 +351,6 @@ class AnyFullmatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
 
     def match(self, value: Any) -> bool:
         return bool(re.fullmatch(self.arg, value))
-
-
-@deprecated(version="0.2.0", reason="Use AnyFullmatch instead")
-def any_fullmatch(
-    pattern: AnyStr | re.Pattern[AnyStr], *, name: Optional[str] = None
-) -> Any:  # pragma: no cover
-    """
-    Returns a matcher that matches any string ``s`` for which
-    ``re.fullmatch(pattern, s)`` succeeds
-    """
-    return AnyFullmatch(pattern, name=name)
 
 
 class AnyIn(AnyArg[ty.Iterable[T]]):
@@ -440,28 +369,11 @@ class AnyIn(AnyArg[ty.Iterable[T]]):
         return bool(any(a == value for a in self.arg))
 
 
-@deprecated(version="0.2.0", reason="Use AnyIn instead")
-def any_in(iterable: Iterable) -> Any:  # pragma: no cover
-    """
-    Returns a matcher that matches any value that equals or matches an element
-    of ``iterable`` (which may contain `anys` matchers).  Note that, if
-    ``iterable`` is a string, only individual characters in the string will
-    match; to match substrings, use `any_substr()` instead.
-    """
-    return AnyIn(iterable)
-
-
 class AnySubstr(AnyArg[AnyStr]):
     """A matcher that matches any substring of ``s``"""
 
     def match(self, value: Any) -> bool:
         return bool(value in self.arg)
-
-
-@deprecated(version="0.2.0", reason="Use AnySubstr instead")
-def any_substr(s: AnyStr) -> Any:  # pragma: no cover
-    """Returns a matcher that matches any substring of ``s``"""
-    return AnySubstr(s)
 
 
 class AnyContains(AnyArg[Any]):
@@ -477,17 +389,6 @@ class AnyContains(AnyArg[Any]):
             return bool(any(self.arg == v for v in value))
         else:
             return bool(self.arg in value)
-
-
-@deprecated(version="0.2.0", reason="Use AnyContains instead")
-def any_contains(key: Any) -> Any:  # pragma: no cover
-    """
-    Returns a matcher that matches any value for which ``key in value`` is
-    true.  If ``key`` is an `anys` matcher, ``value == any_contains(key)``
-    will instead be evaluated by iterating through the elements of ``value``
-    and checking whether any match ``key``.
-    """
-    return AnyContains(key)
 
 
 class AnyWithEntries(AnyArg[ty.Mapping]):
@@ -508,17 +409,6 @@ class AnyWithEntries(AnyArg[ty.Mapping]):
         return True
 
 
-@deprecated(version="0.2.0", reason="Use AnyWithEntries instead")
-def any_with_entries(mapping: Mapping) -> Any:  # pragma: no cover
-    """
-    Returns a matcher that matches any object ``obj`` such that ``obj[k] == v``
-    for all ``k,v`` in ``mapping.items()``.
-
-    The values (but not the keys) of ``mapping`` can be `anys` matchers.
-    """
-    return AnyWithEntries(mapping)
-
-
 class AnyWithAttrs(AnyArg[ty.Mapping]):
     """
     A matcher that matches any object ``obj`` such that ``getattr(obj,
@@ -537,28 +427,11 @@ class AnyWithAttrs(AnyArg[ty.Mapping]):
         return True
 
 
-@deprecated(version="0.2.0", reason="Use AnyWithAttrs instead")
-def any_with_attrs(mapping: Mapping) -> Any:  # pragma: no cover
-    """
-    Returns a matcher that matches any object ``obj`` such that ``getattr(obj,
-    k) == v`` for all ``k,v`` in ``mapping.items()``.
-
-    The values (but not the keys) of ``mapping`` can be `anys` matchers.
-    """
-    return AnyWithAttrs(mapping)
-
-
 class AnyLT(AnyArg[Any]):
     """A matcher that matches any value less than ``bound``"""
 
     def match(self, value: Any) -> bool:
         return bool(value < self.arg)
-
-
-@deprecated(version="0.2.0", reason="Use AnyLT instead")
-def any_lt(bound: Any) -> Any:  # pragma: no cover
-    """Returns a matcher that matches any value less than ``bound``"""
-    return AnyLT(bound)
 
 
 class AnyLE(AnyArg[Any]):
@@ -568,14 +441,6 @@ class AnyLE(AnyArg[Any]):
         return bool(value <= self.arg)
 
 
-@deprecated(version="0.2.0", reason="Use AnyLE instead")
-def any_le(bound: Any) -> Any:  # pragma: no cover
-    """
-    Returns a matcher that matches any value less than or equal to ``bound``
-    """
-    return AnyLE(bound)
-
-
 class AnyGT(AnyArg[Any]):
     """A matcher that matches any value greater than ``bound``"""
 
@@ -583,25 +448,11 @@ class AnyGT(AnyArg[Any]):
         return bool(value > self.arg)
 
 
-@deprecated(version="0.2.0", reason="Use AnyGT instead")
-def any_gt(bound: Any) -> Any:  # pragma: no cover
-    """Returns a matcher that matches any value greater than ``bound``"""
-    return AnyGT(bound)
-
-
 class AnyGE(AnyArg[Any]):
     """A matcher that matches any value greater than or equal to ``bound``"""
 
     def match(self, value: Any) -> bool:
         return bool(value >= self.arg)
-
-
-@deprecated(version="0.2.0", reason="Use AnyGE instead")
-def any_ge(bound: Any) -> Any:  # pragma: no cover
-    """
-    Returns a matcher that matches any value greater than or equal to ``bound``
-    """
-    return AnyGE(bound)
 
 
 ANY_TRUTHY = AnyFunc(bool, name="ANY_TRUTHY")
