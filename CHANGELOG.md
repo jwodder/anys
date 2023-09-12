@@ -1,5 +1,5 @@
-v0.3.0 (in development)
------------------------
+v0.3.0 (2023-09-12)
+-------------------
 - Drop support for Python 3.6
 - Support Python 3.11
 - Remove the function-based API (deprecated in v0.2.0)
