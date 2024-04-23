@@ -1,23 +1,25 @@
-.. image:: https://www.repostatus.org/badges/latest/active.svg
+|repostatus| |ci-status| |coverage| |pyversions| |conda| |license|
+
+.. |repostatus| image:: https://www.repostatus.org/badges/latest/active.svg
     :target: https://www.repostatus.org/#active
     :alt: Project Status: Active — The project has reached a stable, usable
           state and is being actively developed.
 
-.. image:: https://github.com/jwodder/anys/actions/workflows/test.yml/badge.svg
+.. |ci-status| image:: https://github.com/jwodder/anys/actions/workflows/test.yml/badge.svg
     :target: https://github.com/jwodder/anys/actions/workflows/test.yml
     :alt: CI Status
 
-.. image:: https://codecov.io/gh/jwodder/anys/branch/master/graph/badge.svg
+.. |coverage| image:: https://codecov.io/gh/jwodder/anys/branch/master/graph/badge.svg
     :target: https://codecov.io/gh/jwodder/anys
 
-.. image:: https://img.shields.io/pypi/pyversions/anys.svg
+.. |pyversions| image:: https://img.shields.io/pypi/pyversions/anys.svg
     :target: https://pypi.org/project/anys/
 
-.. image:: https://img.shields.io/conda/vn/conda-forge/anys.svg
+.. |conda| image:: https://img.shields.io/conda/vn/conda-forge/anys.svg
     :target: https://anaconda.org/conda-forge/anys
     :alt: Conda Version
 
-.. image:: https://img.shields.io/github/license/jwodder/anys.svg
+.. |license| image:: https://img.shields.io/github/license/jwodder/anys.svg
     :target: https://opensource.org/licenses/MIT
     :alt: MIT License
 
