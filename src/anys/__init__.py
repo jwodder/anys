@@ -159,8 +159,7 @@ else:
 
 class AnyBase(ABC, Base):
     @abstractmethod
-    def match(self, value: Any) -> bool:
-        ...
+    def match(self, value: Any) -> bool: ...
 
     def __eq__(self, other: Any) -> bool:
         try:
