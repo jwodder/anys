@@ -47,20 +47,12 @@ Visit <https://github.com/jwodder/anys> for more information.
 """
 
 from __future__ import annotations
-
-__version__ = "0.4.0.dev1"
-__author__ = "John Thorvald Wodder II"
-__author_email__ = "anys@varonathe.org"
-__license__ = "MIT"
-__url__ = "https://github.com/jwodder/anys"
-
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from datetime import date, datetime, time
 from numbers import Number
 import operator
 import re
-import sys
 import types
 import typing as ty
 from typing import (
@@ -70,10 +62,15 @@ from typing import (
     Generic,
     Optional,
     Pattern,
-    Tuple,
     TypeVar,
     Union,
 )
+
+__version__ = "0.4.0.dev1"
+__author__ = "John Thorvald Wodder II"
+__author_email__ = "anys@varonathe.org"
+__license__ = "MIT"
+__url__ = "https://github.com/jwodder/anys"
 
 __all__ = [
     "ANY_AWARE_DATETIME",
@@ -144,12 +141,9 @@ __all__ = [
 
 T = TypeVar("T")
 
-if sys.version_info[:2] >= (3, 10):
-    ClassInfo = (
-        type | types.UnionType | tuple[type | types.UnionType | tuple[Any, ...], ...]
-    )
-else:
-    ClassInfo = Union[type, Tuple[Union[type, Tuple[Any, ...]], ...]]
+ClassInfo = (
+    type | types.UnionType | tuple[type | types.UnionType | tuple[Any, ...], ...]
+)
 
 if TYPE_CHECKING:
     Base = Any
