@@ -47,33 +47,27 @@ Visit <https://github.com/jwodder/anys> for more information.
 """
 
 from __future__ import annotations
-
-__version__ = "0.3.1"
-__author__ = "John Thorvald Wodder II"
-__author_email__ = "anys@varonathe.org"
-__license__ = "MIT"
-__url__ = "https://github.com/jwodder/anys"
-
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from datetime import date, datetime, time
 from numbers import Number
 import operator
 import re
-import sys
+from re import Pattern
 import types
-import typing as ty
 from typing import (
     TYPE_CHECKING,
     Any,
     AnyStr,
     Generic,
-    Optional,
-    Pattern,
-    Tuple,
     TypeVar,
-    Union,
 )
+
+__version__ = "0.4.0.dev1"
+__author__ = "John Thorvald Wodder II"
+__author_email__ = "anys@varonathe.org"
+__license__ = "MIT"
+__url__ = "https://github.com/jwodder/anys"
 
 __all__ = [
     "ANY_AWARE_DATETIME",
@@ -144,12 +138,9 @@ __all__ = [
 
 T = TypeVar("T")
 
-if sys.version_info[:2] >= (3, 10):
-    ClassInfo = (
-        type | types.UnionType | tuple[type | types.UnionType | tuple[Any, ...], ...]
-    )
-else:
-    ClassInfo = Union[type, Tuple[Union[type, Tuple[Any, ...]], ...]]
+ClassInfo = (
+    type | types.UnionType | tuple[type | types.UnionType | tuple[Any, ...], ...]
+)
 
 if TYPE_CHECKING:
     Base = Any
@@ -193,7 +184,7 @@ class AnyBase(ABC, Base):
 
 
 class AnyArg(AnyBase, Generic[T]):
-    def __init__(self, arg: T, *, name: Optional[str] = None) -> None:
+    def __init__(self, arg: T, *, name: str | None = None) -> None:
         self.arg = arg
         self.name = name
 
@@ -322,7 +313,7 @@ class Not(AnyArg[Any]):
         return bool(self.arg != value)
 
 
-class AnyMatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
+class AnyMatch(AnyArg[AnyStr | Pattern[AnyStr]]):
     """
     A matcher that matches any string ``s`` for which ``re.match(pattern, s)``
     succeeds
@@ -332,7 +323,7 @@ class AnyMatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
         return bool(re.match(self.arg, value))
 
 
-class AnySearch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
+class AnySearch(AnyArg[AnyStr | Pattern[AnyStr]]):
     """
     A matcher that matches any string ``s`` for which ``re.search(pattern, s)``
     succeeds
@@ -342,7 +333,7 @@ class AnySearch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
         return bool(re.search(self.arg, value))
 
 
-class AnyFullmatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
+class AnyFullmatch(AnyArg[AnyStr | Pattern[AnyStr]]):
     """
     A matcher that matches any string ``s`` for which ``re.fullmatch(pattern,
     s)`` succeeds
@@ -352,7 +343,7 @@ class AnyFullmatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
         return bool(re.fullmatch(self.arg, value))
 
 
-class AnyIn(AnyArg[ty.Iterable[T]]):
+class AnyIn(AnyArg[Iterable[T]]):
     """
     A matcher that matches any value that equals or matches an element of
     ``iterable`` (which may contain `anys` matchers).  Note that, if
@@ -360,7 +351,7 @@ class AnyIn(AnyArg[ty.Iterable[T]]):
     match; to match substrings, use `any_substr()` instead.
     """
 
-    def __init__(self, arg: Iterable[T], *, name: Optional[str] = None) -> None:
+    def __init__(self, arg: Iterable[T], *, name: str | None = None) -> None:
         self.arg: list[T] = list(arg)
         self.name = name
 
@@ -390,7 +381,7 @@ class AnyContains(AnyArg[Any]):
             return bool(self.arg in value)
 
 
-class AnyWithEntries(AnyArg[ty.Mapping]):
+class AnyWithEntries(AnyArg[Mapping]):
     """
     A matcher that matches any object ``obj`` such that ``obj[k] == v`` for all
     ``k,v`` in ``mapping.items()``.
@@ -408,7 +399,7 @@ class AnyWithEntries(AnyArg[ty.Mapping]):
         return True
 
 
-class AnyWithAttrs(AnyArg[ty.Mapping]):
+class AnyWithAttrs(AnyArg[Mapping]):
     """
     A matcher that matches any object ``obj`` such that ``getattr(obj,
     k) == v`` for all ``k,v`` in ``mapping.items()``.
@@ -482,7 +473,7 @@ ANY_NAIVE_TIME_STR = AnyFullmatch(re.compile(TIME_RGX), name="ANY_NAIVE_TIME_STR
 
 
 class AnyArgs(AnyBase):
-    def __init__(self, *args: AnyBase, name: Optional[str] = None) -> None:
+    def __init__(self, *args: AnyBase, name: str | None = None) -> None:
         self.args: list[AnyBase] = list(args)
         self.name = name
 
