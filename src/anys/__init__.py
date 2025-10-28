@@ -53,6 +53,7 @@ from datetime import date, datetime, time
 from numbers import Number
 import operator
 import re
+from re import Pattern
 import types
 import typing as ty
 from typing import (
@@ -60,8 +61,6 @@ from typing import (
     Any,
     AnyStr,
     Generic,
-    Optional,
-    Pattern,
     TypeVar,
     Union,
 )
@@ -187,7 +186,7 @@ class AnyBase(ABC, Base):
 
 
 class AnyArg(AnyBase, Generic[T]):
-    def __init__(self, arg: T, *, name: Optional[str] = None) -> None:
+    def __init__(self, arg: T, *, name: str | None = None) -> None:
         self.arg = arg
         self.name = name
 
@@ -354,7 +353,7 @@ class AnyIn(AnyArg[ty.Iterable[T]]):
     match; to match substrings, use `any_substr()` instead.
     """
 
-    def __init__(self, arg: Iterable[T], *, name: Optional[str] = None) -> None:
+    def __init__(self, arg: Iterable[T], *, name: str | None = None) -> None:
         self.arg: list[T] = list(arg)
         self.name = name
 
@@ -476,7 +475,7 @@ ANY_NAIVE_TIME_STR = AnyFullmatch(re.compile(TIME_RGX), name="ANY_NAIVE_TIME_STR
 
 
 class AnyArgs(AnyBase):
-    def __init__(self, *args: AnyBase, name: Optional[str] = None) -> None:
+    def __init__(self, *args: AnyBase, name: str | None = None) -> None:
         self.args: list[AnyBase] = list(args)
         self.name = name
 
