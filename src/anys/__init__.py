@@ -60,6 +60,7 @@ from typing import (
     Any,
     AnyStr,
     Generic,
+    TypeAlias,
     TypeVar,
 )
 
@@ -138,7 +139,7 @@ __all__ = [
 
 T = TypeVar("T")
 
-ClassInfo = (
+ClassInfo: TypeAlias = (
     type | types.UnionType | tuple[type | types.UnionType | tuple[Any, ...], ...]
 )
 
