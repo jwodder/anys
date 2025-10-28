@@ -1,3 +1,7 @@
+v0.4.0 (in development)
+-----------------------
+- Support Python 3.14
+
 v0.3.1 (2024-12-01)
 -------------------
 - Support Python 3.12 and 3.13
