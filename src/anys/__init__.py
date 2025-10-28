@@ -55,14 +55,12 @@ import operator
 import re
 from re import Pattern
 import types
-import typing as ty
 from typing import (
     TYPE_CHECKING,
     Any,
     AnyStr,
     Generic,
     TypeVar,
-    Union,
 )
 
 __version__ = "0.4.0.dev1"
@@ -315,7 +313,7 @@ class Not(AnyArg[Any]):
         return bool(self.arg != value)
 
 
-class AnyMatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
+class AnyMatch(AnyArg[AnyStr | Pattern[AnyStr]]):
     """
     A matcher that matches any string ``s`` for which ``re.match(pattern, s)``
     succeeds
@@ -325,7 +323,7 @@ class AnyMatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
         return bool(re.match(self.arg, value))
 
 
-class AnySearch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
+class AnySearch(AnyArg[AnyStr | Pattern[AnyStr]]):
     """
     A matcher that matches any string ``s`` for which ``re.search(pattern, s)``
     succeeds
@@ -335,7 +333,7 @@ class AnySearch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
         return bool(re.search(self.arg, value))
 
 
-class AnyFullmatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
+class AnyFullmatch(AnyArg[AnyStr | Pattern[AnyStr]]):
     """
     A matcher that matches any string ``s`` for which ``re.fullmatch(pattern,
     s)`` succeeds
@@ -345,7 +343,7 @@ class AnyFullmatch(AnyArg[Union[AnyStr, Pattern[AnyStr]]]):
         return bool(re.fullmatch(self.arg, value))
 
 
-class AnyIn(AnyArg[ty.Iterable[T]]):
+class AnyIn(AnyArg[Iterable[T]]):
     """
     A matcher that matches any value that equals or matches an element of
     ``iterable`` (which may contain `anys` matchers).  Note that, if
@@ -383,7 +381,7 @@ class AnyContains(AnyArg[Any]):
             return bool(self.arg in value)
 
 
-class AnyWithEntries(AnyArg[ty.Mapping]):
+class AnyWithEntries(AnyArg[Mapping]):
     """
     A matcher that matches any object ``obj`` such that ``obj[k] == v`` for all
     ``k,v`` in ``mapping.items()``.
@@ -401,7 +399,7 @@ class AnyWithEntries(AnyArg[ty.Mapping]):
         return True
 
 
-class AnyWithAttrs(AnyArg[ty.Mapping]):
+class AnyWithAttrs(AnyArg[Mapping]):
     """
     A matcher that matches any object ``obj`` such that ``getattr(obj,
     k) == v`` for all ``k,v`` in ``mapping.items()``.
